@@ -1,1 +1,2 @@
-ChemicalSimilarityViewer
+# Chemical similarities viewer 
+
