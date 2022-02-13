@@ -1,2 +1,3 @@
-# Chemical similarities viewer 
+# Chemical similarity viewer 
 
+Web interface that allows to: ....
