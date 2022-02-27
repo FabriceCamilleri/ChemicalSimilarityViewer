@@ -36,11 +36,51 @@
         </div>
     </nav>
 
-    <div style="width: 100%; display: table; margin-left: 2%; margin-right: 10%;">
-        <div style="display: table-row">
-            <div style="width: 300px; display: table-cell; border: solid"> Parameters </div>
-            <div style="width: 800px; display: table-cell; border: solid"> Graph </div>
-            <div style="display: table-cell; border: solid;"> Molecules </div>
+    <div style="display: flex; margin-left: 2%; margin-right: 2%; margin-top: 2%; height: 600px;">
+        <div
+            style="flex:2; border: solid; margin-right: 20px; height: 100%; border-radius: 20px; border-color: grey; padding: 20px">
+            <h4>Parameters</h4>
+            <hr>
+            <p><label for="filecsv">Choose a csv file:</label>
+
+                <input type="file" id="filecsv" name="filecsv" accept="file/csv">
+
+                <input type="checkbox" id="compare" name="compare" checked>
+                <label for="compare">Compare with Database</label>
+            </p>
+            <hr>
+            <p>
+                <label for="xlabel">Choose an algorithm for x-axis:</label>
+
+                <select name="xlabel" id="xlabel">
+                    <option value="">algo 1 (default)</option>
+                    <option value="dog">algo 2</option>
+                </select>
+            </p>
+            <p>
+                <label for="ylabel">Choose an algorithm for y-axis:</label>
+
+                <select name="ylabel" id="ylabel">
+                    <option value="">algo 1 (default)</option>
+                    <option value="dog">algo 2</option>
+                </select>
+            </p>
+        </div>
+        <div
+            style="flex:5; border: solid; padding: 1%; margin-right: 20px; height: 100%; border-radius: 20px; border-color: grey; text-align: center;">
+            <img src="https://cdn.kastatic.org/ka-perseus-graphie/f4f55e21651d6077308082714a90f1fb19e98447.svg"
+                alt="graph" height="100%">
+        </div>
+        <div style="flex:2; border: solid; height: 100%; border-radius: 20px; border-color: grey; padding: 20px">
+            <h4>Molecules</h4>
+            <hr>
+            <ul>
+                <li style="color:blue"><b>Aspirin</b></li>
+                <li style="color:red"><b>Cafein</b></li>
+                <li style="color:purple"><b>Dopamin</b></li>
+                <li style="color:green"><b>Digitalin</b></li>
+                <li style="color:orange"><b>Vasopressin</b></li>
+            </ul>
         </div>
     </div>
 
