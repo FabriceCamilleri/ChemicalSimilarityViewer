@@ -1,3 +1,4 @@
 # Chemical similarity viewer 
-
-Web interface that allows to: ....
+Dans le dossier my-app, lancer les 2 serveurs sur 2 terminals :
+yarn start (run frontend - ReactJS)
+yarn start-api (run Backend - Flask)
