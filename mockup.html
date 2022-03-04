@@ -27,9 +27,6 @@
                     <a class="nav-link" href="#">About</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">Submit new molecule</a>
-                </li>
-                <li class="nav-item">
                     <a class="nav-link" href="#">login</a>
                 </li>
             </ul>
@@ -45,26 +42,26 @@
 
                 <input type="file" id="filecsv" name="filecsv" accept="file/csv">
 
-                <input type="checkbox" id="compare" name="compare" checked>
-                <label for="compare">Compare with Database</label>
             </p>
 
             <button type="submit" class="btn btn-primary">Submit</button>
             <hr>
             <p>
-                <label for="xlabel">Choose an algorithm for x-axis:</label>
+                <label for="xlabel">Choose an algorithm</label>
 
                 <select name="xlabel" id="xlabel">
-                    <option value="">algo 1 (default)</option>
-                    <option value="dog">algo 2</option>
+                    <option value="">tSNE</option>
+                    <option value="umap">UMAP</option>
                 </select>
             </p>
             <p>
-                <label for="ylabel">Choose an algorithm for y-axis:</label>
+                <label for="ylabel">Choose distance:</label>
 
                 <select name="ylabel" id="ylabel">
-                    <option value="">algo 1 (default)</option>
-                    <option value="dog">algo 2</option>
+                    <option value="">euclidian</option>
+                    <option value="cosin">cosin</option>
+                    <option value="dice">dice</option>
+                    <option value="block">block house</option>
                 </select>
             </p>
         </div>
