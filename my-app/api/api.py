@@ -11,5 +11,4 @@ def get_current_time():
 
 @app.route('/post', methods=['POST'])
 def updateCurrentName():
-    # if key doesn't exist, returns None
     return request.json

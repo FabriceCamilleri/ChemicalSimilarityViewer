@@ -3,13 +3,6 @@ import logo from './logo.svg';
 import './App.css';
 
 function App() {
-  const [currentTime, setCurrentTime] = useState(0);
-
-  useEffect(() => {
-    fetch('/time').then(res => res.json()).then(data => {
-      setCurrentTime(data.time);
-    });
-  }, []);
 
   return (
     <div className="App">
@@ -17,12 +10,8 @@ function App() {
         <button onClick={Send}>
           Send
         </button>
-        <p>Hello {currentTime}.</p>
       </header>
-
     </div>
-
-
   );
 }
 
@@ -39,5 +28,6 @@ function Send() {
     },
     body: JSON.stringify({ title: inputName })
   })
-    .then((response) => response.json().then(function (res) { console.log(res) }));
+    .then((response) => response.json()
+      .then(res => { document.getElementById('name').innerHTML = "hello " + res.title; }));
 }
