@@ -14,13 +14,30 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
-
-        ... no changes in this part ...
-
-        <p>The current time is {currentTime}.</p>
+        <button onClick={Send}>
+          Send
+        </button>
+        <p>Hello {currentTime}.</p>
       </header>
+
     </div>
+
+
   );
 }
 
 export default App;
+
+function Send() {
+  var inputName = document.getElementById("nameinput").value;
+
+  fetch('/post', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({ title: inputName })
+  })
+    .then((response) => response.json().then(function (res) { console.log(res) }));
+}
