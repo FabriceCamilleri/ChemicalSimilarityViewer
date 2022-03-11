@@ -1,5 +1,5 @@
 import time
-from flask import Flask, request
+from flask import Flask, request, send_file
 import os
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
@@ -34,4 +34,6 @@ def upload_file():
 
     df = pd.read_csv(request.files['File'])
 
-    return {'nb_molecules': df.shape[0]}
+    # return {'nb_molecules': df.shape[0]}
+
+    return send_file("example20chemicalsCoords.csv")

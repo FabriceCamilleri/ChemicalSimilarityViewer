@@ -26,8 +26,8 @@ function App() {
         body: formData,
       }
     )
-      .then((response) => response.json())
-      .then(res => { document.getElementById('name').innerHTML = res.nb_molecules != -1 ? "Nombre de molécules : " + res.nb_molecules : "Erreur : Mauvais type de fichier"; })
+      .then((response) => response.blob())
+      .then(res => { res.text().then(res => document.getElementById('name').innerHTML = res); })
       .catch((error) => {
         document.getElementById('name').innerHTML = "Erreur";
       });
@@ -43,7 +43,38 @@ function App() {
     </div>
   )
 };
+function csvJSON(csv) {
+  const lines = csv.split('\n')
+  const result = []
+  const headers = lines[0].split(',')
 
+  for (let i = 1; i < lines.length; i++) {
+    if (!lines[i])
+      continue
+    const obj = {}
+    const currentline = lines[i].split(',')
+
+    for (let j = 0; j < headers.length; j++) {
+      obj[headers[j]] = currentline[j]
+    }
+    result.push(obj)
+  }
+  return result
+}
+
+function makeTableHTML(myArray) {
+  var result = "<table border=1>";
+  for (var i = 0; i < myArray.length; i++) {
+    result += "<tr>";
+    for (var j = 0; j < myArray[i].length; j++) {
+      result += "<td>" + myArray[i][j] + "</td>";
+    }
+    result += "</tr>";
+  }
+  result += "</table>";
+
+  return result;
+}
 
 export default App;
 
