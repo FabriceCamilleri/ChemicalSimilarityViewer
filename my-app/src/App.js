@@ -50,7 +50,7 @@ function App() {
         <p>Select a file to show details</p>
       )}
       <div>
-        <button onClick={handleSubmission}>Submit</button>
+        <button className="btn btn-primary" onClick={handleSubmission}>Submit</button>
       </div>
     </div>
   )
