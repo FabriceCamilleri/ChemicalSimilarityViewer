@@ -7,11 +7,10 @@ import pandas as pd
 
 
 UPLOAD_FOLDER = '/path/to/the/uploads'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', '.csv', '7z'}
+ALLOWED_EXTENSIONS = {'csv'}
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app = Flask(__name__)
 
 
 @app.route('/post', methods=['POST'])
@@ -26,28 +25,13 @@ def allowed_file(filename):
 
 @app.route('/file', methods=['POST'])
 def upload_file():
-    # check if the post request has the file part
-    print("req files :", request.files['File'])
+    if 'File' not in request.files:
+        return {'nb_molecules': -1}
+
+    file = request.files['File']
+    if file.filename == '' or file and not allowed_file(file.filename):
+        return {'nb_molecules': -1}
 
     df = pd.read_csv(request.files['File'])
 
-    return {'file': df.shape[0]}
-    # if 'file' not in request.files:
-    #     print("test1")
-    #     #flash('No file part')
-    #     # return redirect(request.url)
-    #     return {file: "first"}
-    file = request.files['file']
-    # If the user does not select a file, the browser submits an
-    # empty file without a filename.
-    if file.filename == '':
-        #flash('No selected file')
-        print("test2")
-        # return redirect(request.url)
-        return {file: "second"}
-    if file and allowed_file(file.filename):
-        print("i saved the file")
-        # filename = secure_filename(file.filename)
-        # file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-        # return redirect(url_for('download_file', name=filename))
-        return {file: "file.csv"}
+    return {'nb_molecules': df.shape[0]}
