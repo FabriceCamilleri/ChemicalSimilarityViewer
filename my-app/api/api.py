@@ -3,6 +3,8 @@ from flask import Flask, request
 import os
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
+import pandas as pd
+
 
 UPLOAD_FOLDER = '/path/to/the/uploads'
 ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', '.csv', '7z'}
@@ -25,8 +27,11 @@ def allowed_file(filename):
 @app.route('/file', methods=['POST'])
 def upload_file():
     # check if the post request has the file part
-    print("req files :", request.files)
-    return {'file': "test.csv"}
+    print("req files :", request.files['File'])
+
+    df = pd.read_csv(request.files['File'])
+
+    return {'file': df.shape[0]}
     # if 'file' not in request.files:
     #     print("test1")
     #     #flash('No file part')

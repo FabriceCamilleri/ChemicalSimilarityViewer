@@ -42,9 +42,7 @@ function App() {
       }
     )
       .then((response) => response.json())
-      .then((result) => {
-        console.log('Success:', result.file);
-      })
+      .then(res => { document.getElementById('name').innerHTML = "Nombre de molécules :" + res.file; })
       .catch((error) => {
         console.error('Error:', error);
       });
