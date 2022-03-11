@@ -42,9 +42,9 @@ function App() {
       }
     )
       .then((response) => response.json())
-      .then(res => { document.getElementById('name').innerHTML = "Nombre de molécules :" + res.file; })
+      .then(res => { document.getElementById('name').innerHTML = res.nb_molecules != -1 ? "Nombre de molécules : " + res.nb_molecules : "Erreur : Mauvais type de fichier"; })
       .catch((error) => {
-        console.error('Error:', error);
+        document.getElementById('name').innerHTML = "Erreur";
       });
   };
 
