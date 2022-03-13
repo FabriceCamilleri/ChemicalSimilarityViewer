@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8" />
-  <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+  <link rel="icon" href="%PUBLIC_URL%/logo_chemical.ico" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#000000" />
   <meta name="description" content="Web site created using create-react-app" />
@@ -24,7 +24,9 @@
 
 <body>
   <nav class="navbar navbar-expand-md navbar-light bg-light">
-    <a class="navbar-brand"><b>Chemical Similarity Viewer</b></a>
+    <a class="navbar-brand"><img src="%PUBLIC_URL%/logo_chemical.ico"
+        style="width:40px;height:40px;margin-right:10px"><b>Chemical
+        Similarity Viewer</b></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
       aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
@@ -44,7 +46,7 @@
   <br>
   <br>
 
-  <div style="display: flex; margin-left: 2%; margin-right: 2%; margin-top: 2%; height: 600px;">
+  <div style="display: flex; margin-left: 2%; margin-right: 2%; height: 600px;">
     <div
       style="flex:2; border: solid; margin-right: 20px; height: 100%; border-radius: 20px; border-color: grey; padding: 20px">
       <h4>Parameters</h4>
@@ -67,7 +69,7 @@
         </select>
       </p>
       <p>
-        <label for="ylabel">Choose distance:</label>
+        <label for="ylabel">Choose distance</label>
 
         <select name="ylabel" id="ylabel">
           <option value="">euclidian</option>
