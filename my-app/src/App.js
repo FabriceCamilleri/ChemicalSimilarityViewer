@@ -98,8 +98,26 @@ function jsonToHTMLTable(json) {
   var div = document.createElement("div")
 
   div.setAttribute('style', 'max-height:570px; max-width:1000px;')
-  div.setAttribute('class', 'table-responsive text-nowrap')
+  div.setAttribute('class', 'table-responsive text-nowrap scrollbar-primary')
   div.appendChild(table)
+  var styles = `    
+    .scrollbar-primary::-webkit-scrollbar {
+    width: 17px;
+    background-color: #F5F5F5; }
+    
+    .scrollbar-primary::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+    background-color: #4285F4; }
+    
+    .scrollbar-primary {
+    scrollbar-color: #4285F4 #F5F5F5;
+    }
+`
+
+  var styleSheet = document.createElement("style")
+  styleSheet.innerText = styles
+  document.head.appendChild(styleSheet)
 
   return div;
 }
