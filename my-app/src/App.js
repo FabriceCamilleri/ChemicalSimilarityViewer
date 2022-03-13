@@ -92,10 +92,12 @@ function jsonToHTMLTable(json) {
     }
   }
 
+
   table.setAttribute('class', 'table table-bordered table-striped mb-0');
 
   var div = document.createElement("div")
-  div.setAttribute('style', 'max-height:580px; max-width:1000px;')
+
+  div.setAttribute('style', 'max-height:570px; max-width:1000px;')
   div.setAttribute('class', 'table-responsive text-nowrap')
   div.appendChild(table)
 
