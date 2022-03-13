@@ -27,7 +27,7 @@ function App() {
       }
     )
       .then((response) => response.blob())
-      .then(res => { res.text().then(res => document.getElementById('name').innerHTML = res); })
+      .then(res => { res.text().then(res => { document.getElementById("name").innerHTML = ""; document.getElementById("name").appendChild(jsonToHTMLTable(csvToJson(res))) }); })
       .catch((error) => {
         document.getElementById('name').innerHTML = "Erreur";
       });
@@ -43,7 +43,7 @@ function App() {
     </div>
   )
 };
-function csvJSON(csv) {
+function csvToJson(csv) {
   const lines = csv.split('\n')
   const result = []
   const headers = lines[0].split(',')
@@ -62,18 +62,44 @@ function csvJSON(csv) {
   return result
 }
 
-function makeTableHTML(myArray) {
-  var result = "<table border=1>";
-  for (var i = 0; i < myArray.length; i++) {
-    result += "<tr>";
-    for (var j = 0; j < myArray[i].length; j++) {
-      result += "<td>" + myArray[i][j] + "</td>";
+function jsonToHTMLTable(json) {
+  var col = [];
+  for (var i = 0; i < json.length; i++) {
+    for (var key in json[i]) {
+      if (col.indexOf(key) === -1) {
+        col.push(key);
+      }
     }
-    result += "</tr>";
   }
-  result += "</table>";
 
-  return result;
+  var table = document.createElement("table");
+
+  var tr = table.insertRow(-1);
+
+  for (var i = 0; i < col.length; i++) {
+    var th = document.createElement("th");
+    th.innerHTML = col[i];
+    tr.appendChild(th);
+  }
+
+  for (var i = 0; i < json.length; i++) {
+
+    tr = table.insertRow(-1);
+
+    for (var j = 0; j < col.length; j++) {
+      var tabCell = tr.insertCell(-1);
+      tabCell.innerHTML = json[i][col[j]];
+    }
+  }
+
+  table.setAttribute('class', 'table table-bordered table-striped mb-0');
+
+  var div = document.createElement("div")
+  div.setAttribute('style', 'max-height:580px; max-width:1000px;')
+  div.setAttribute('class', 'table-responsive text-nowrap')
+  div.appendChild(table)
+
+  return div;
 }
 
 export default App;
