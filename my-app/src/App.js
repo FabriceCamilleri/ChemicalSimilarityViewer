@@ -2,21 +2,19 @@ import React, { useState, useEffect } from 'react';
 import logo from './logo.svg';
 import './App.css';
 
+const ALLOWED_FILE = 'csv'
 
 function App() {
   const [selectedFile, setSelectedFile] = useState();
-  const [isFilePicked, setIsFilePicked] = useState(false);
-  var isSelected = false;
 
   const changeHandler = (event) => {
     setSelectedFile(event.target.files[0]);
-
-    isSelected = true;
   };
 
   const handleSubmission = () => {
-    const formData = new FormData();
+    if (!selectedFile || selectedFile.name.split('.')[1] != ALLOWED_FILE) return
 
+    const formData = new FormData();
     formData.append('File', selectedFile);
 
     fetch(
@@ -27,7 +25,15 @@ function App() {
       }
     )
       .then((response) => response.blob())
-      .then(res => { res.text().then(res => { document.getElementById("name").innerHTML = ""; document.getElementById("name").appendChild(jsonToHTMLTable(csvToJson(res))) }); })
+      .then(res => {
+        res.text().then(res => {
+          document.getElementById("name").innerHTML = "";
+          document.getElementById("name").appendChild(jsonToHTMLTable(csvToJson(res)));
+        });
+        let href = window.URL.createObjectURL(res)
+        document.getElementById('download').innerHTML = `<hr/> <a class='btn btn-danger' role='button' href=${href} download='result.csv'>Download</a>`;
+
+      })
       .catch((error) => {
         document.getElementById('name').innerHTML = "Erreur";
       });
