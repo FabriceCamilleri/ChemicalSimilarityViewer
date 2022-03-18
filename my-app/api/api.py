@@ -34,10 +34,10 @@ def upload_file():
         return {'nb_molecules': -1}
 
     df = pd.read_csv(request.files['File'])
-    # print(df)
-    chemspace.createChemicalSpace(df, "smiles")
-    # print(res)
+    df = chemspace.createChemicalSpace(df, "smiles")
+
+    print("res\n", df)
 
     # return {'nb_molecules': df.shape[0]}
-
-    return send_file("example20chemicalsCoords.csv")
+    df.to_csv("res.csv", index=False)
+    return send_file("res.csv")
