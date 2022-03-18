@@ -120,4 +120,6 @@ def createChemicalSpace (smiles_df, smilesColumn):
     
     print('done\t')
     
-    return res_df
+    # now we can merge
+    
+    return pd.merge(smiles_df, res_df, on=smilesColumn, how='left')
