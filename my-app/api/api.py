@@ -4,6 +4,7 @@ import os
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import pandas as pd
+import chemspace
 
 
 UPLOAD_FOLDER = '/path/to/the/uploads'
@@ -33,6 +34,9 @@ def upload_file():
         return {'nb_molecules': -1}
 
     df = pd.read_csv(request.files['File'])
+    # print(df)
+    chemspace.createChemicalSpace(df, "smiles")
+    # print(res)
 
     # return {'nb_molecules': df.shape[0]}
 
