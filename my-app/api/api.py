@@ -33,8 +33,11 @@ def upload_file():
     if file.filename == '' or file and not allowed_file(file.filename):
         return {'nb_molecules': -1}
 
-    df = pd.read_csv(request.files['File'])
-    df = chemspace.createChemicalSpace(df, "smiles")
+    index = request.args.get('index')
+    print(type(index))
+
+    df = pd.read_csv(request.files['File'], header=None)
+    df = chemspace.createChemicalSpace(df, int(index))
 
     print("res\n", df)
 

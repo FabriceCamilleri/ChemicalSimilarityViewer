@@ -4,11 +4,22 @@ import './App.css';
 
 const ALLOWED_FILE = 'csv'
 
+var selected_column;
+
 function App() {
   const [selectedFile, setSelectedFile] = useState();
 
   const changeHandler = (event) => {
     setSelectedFile(event.target.files[0]);
+    let reader = new FileReader();
+    reader.readAsText(event.target.files[0]);
+    reader.onload = function () {
+      document.getElementById("name").innerHTML = "";
+      document.getElementById("name").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
+      highlight_row()
+    }
+
+
   };
 
   const handleSubmission = () => {
@@ -16,9 +27,13 @@ function App() {
 
     const formData = new FormData();
     formData.append('File', selectedFile);
-
+    // var url = new URL("/file")
+    // var params = { index: selected_column }
+    // url.search = new URLSearchParams(params).toString();
+    // console.log(url)
+    var url = updateQueryStringParameter("/file", "index", selected_column)
     fetch(
-      '/file',
+      url,
       {
         method: 'POST',
         body: formData,
@@ -29,6 +44,7 @@ function App() {
         res.text().then(res => {
           document.getElementById("name").innerHTML = "";
           document.getElementById("name").appendChild(jsonToHTMLTable(csvToJson(res)));
+
         });
         let href = window.URL.createObjectURL(res)
         document.getElementById('download').innerHTML = `<hr/> <a class='btn btn-danger' role='button' href=${href} download='result.csv'>Download</a>`;
@@ -80,6 +96,7 @@ function jsonToHTMLTable(json) {
 
   var table = document.createElement("table");
 
+
   var tr = table.insertRow(-1);
 
   for (var i = 0; i < col.length; i++) {
@@ -100,6 +117,7 @@ function jsonToHTMLTable(json) {
 
 
   table.setAttribute('class', 'table table-bordered table-striped mb-0');
+  table.setAttribute('id', 'sentCSV');
 
   var div = document.createElement("div")
 
@@ -125,6 +143,8 @@ function jsonToHTMLTable(json) {
   styleSheet.innerText = styles
   document.head.appendChild(styleSheet)
 
+
+
   return div;
 }
 
@@ -144,5 +164,37 @@ function Send() {
     .then((response) => response.json()
       .then(res => { document.getElementById('name').innerHTML = "hello " + res.title; }));
 }
+
+function highlight_row() {
+  var table = document.getElementById("sentCSV");
+  var cells = table.getElementsByTagName("td");
+  for (var i = 0; i < cells.length; i++) {
+    var cell = cells[i];
+    cell.onclick = function () {
+      const parentTds = this.parentElement.children;
+      const clickedTdIndex = [...parentTds].findIndex(td => td == this);
+      selected_column = clickedTdIndex;
+      const columns = document.querySelectorAll(`td:nth-child(${clickedTdIndex + 1}), th:nth-child(${clickedTdIndex + 1})`);
+      document.querySelectorAll('.selected').forEach(col => col.classList.remove('selected'));
+      columns.forEach(col => {
+        col.classList.add('selected');
+      });
+    }
+  }
+
+}
+
+function updateQueryStringParameter(uri, key, value) {
+  var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
+  var separator = uri.indexOf('?') !== -1 ? "&" : "?";
+  if (uri.match(re)) {
+    return uri.replace(re, '$1' + key + "=" + value + '$2');
+  }
+  else {
+    return uri + separator + key + "=" + value;
+  }
+}
+
+// window.onload = highlight_row;
 
 
