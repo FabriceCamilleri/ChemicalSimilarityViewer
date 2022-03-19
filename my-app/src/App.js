@@ -201,7 +201,6 @@ function select_column(setDisable) {
 function mouseEvent(cell, isEntering) {
   const parentTds = cell.parentElement.children;
   const clickedTdIndex = [...parentTds].findIndex(td => td == cell);
-  selected_column = clickedTdIndex;
   const columns = document.querySelectorAll(`td:nth-child(${clickedTdIndex + 1}), th:nth-child(${clickedTdIndex + 1})`);
   document.querySelectorAll('.highlighted').forEach(col => col.classList.remove('highlighted'));
   if (isEntering) columns.forEach(col => { col.classList.add('highlighted'); });
