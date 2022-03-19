@@ -13,7 +13,10 @@ code {
 }
 
 .selected {
-  background-color: #0d6efd;
-  color: white;
+  background-color: #0d6efd66;
 
+}
+
+.highlighted {
+  background-color: #0d6efd;
 }
