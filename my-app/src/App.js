@@ -63,6 +63,10 @@ function App() {
       .catch((error) => {
         document.getElementById('name').innerHTML = "Erreur";
       });
+    let loader = document.createElement("div")
+    loader.setAttribute('class', 'loader')
+    document.getElementById("name").innerHTML = "";
+    document.getElementById("name").appendChild(loader)
   };
 
   return (
