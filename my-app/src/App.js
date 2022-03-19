@@ -203,8 +203,8 @@ function mouseEvent(cell, isEntering) {
   const clickedTdIndex = [...parentTds].findIndex(td => td == cell);
   selected_column = clickedTdIndex;
   const columns = document.querySelectorAll(`td:nth-child(${clickedTdIndex + 1}), th:nth-child(${clickedTdIndex + 1})`);
-  document.querySelectorAll('.selected').forEach(col => col.classList.remove('selected'));
-  if (isEntering) columns.forEach(col => { col.classList.add('selected'); });
+  document.querySelectorAll('.highlighted').forEach(col => col.classList.remove('highlighted'));
+  if (isEntering) columns.forEach(col => { col.classList.add('highlighted'); });
 }
 
 function clickEvent(cell) {
@@ -212,8 +212,8 @@ function clickEvent(cell) {
   const clickedTdIndex = [...parentTds].findIndex(td => td == cell);
   selected_column = clickedTdIndex;
   const columns = document.querySelectorAll(`td:nth-child(${clickedTdIndex + 1}), th:nth-child(${clickedTdIndex + 1})`);
-  document.querySelectorAll('.highlighted').forEach(col => col.classList.remove('highlighted'));
-  columns.forEach(col => { col.classList.add('highlighted'); });
+  document.querySelectorAll('.selected').forEach(col => col.classList.remove('selected'));
+  columns.forEach(col => { col.classList.add('selected'); });
 }
 
 function updateQueryStringParameter(uri, key, value) {
