@@ -11,8 +11,10 @@ function App() {
   const [disable, setDisable] = useState(true);
 
   const changeHandler = (event) => {
-    setDisable(true)
+    if (!event.target.files[0] || event.target.files[0].name.split('.')[1] != ALLOWED_FILE) return
+
     setSelectedFile(event.target.files[0]);
+    setDisable(true)
     let text = document.createTextNode("Select the column containing SMILES code")
     let strong = document.createElement("strong")
     let p = document.createElement("p")
