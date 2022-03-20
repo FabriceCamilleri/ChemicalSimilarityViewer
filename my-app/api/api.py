@@ -1,5 +1,6 @@
 import time
 from flask import Flask, request, send_file
+from flask.helpers import send_from_directory
 import os
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
@@ -11,6 +12,7 @@ UPLOAD_FOLDER = '/path/to/the/uploads'
 ALLOWED_EXTENSIONS = {'csv'}
 
 app = Flask(__name__)
+#app = Flask(__name__, static_folder="../build", static_url_path="")
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
@@ -44,3 +46,11 @@ def upload_file():
     # return {'nb_molecules': df.shape[0]}
     df.to_csv("res.csv", index=False)
     return send_file("res.csv")
+
+# @app.route('/')
+# def serve():
+#     return send_from_directory(app.static_folder, 'index.html')
+
+
+# if __name__ == "__main__":
+#     app.run()
