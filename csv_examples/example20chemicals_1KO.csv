@@ -1,0 +1,20 @@
+aspirin,CC(=O)OC1=CC=CC=C1C(=O)O
+aspirin magnesium,CC(=O)OC1=CC=CC=C1C(=O)[O-].CC(=O)OC1=CC=CC=C1C(=O)[O-].[Mg+2]
+paracetamol,CC(=O)NC1=CC=C(C=C1)O
+parapromol,CCC(=O)NC1=CC=C(C=C1)O
+bisphenol A,CC(C)(C1=CC=C(C=C1)O)C2=CC=C(C=C2)O
+bisphenol B,CCC(C)(C1=CC=C(C=C1)O)C2=CC=C(C=C2)O
+caffeine,CN1C=NC2=C1C(=O)N(C(=O)N2C)C
+caffeinol,CN1C=NC2=C1C(=O)N(C(=O)N2C)CO
+ibuprofen,CC(C)CC1=CC=C(C=C1)C(C)C(=O)O
+ketoprofen,CC(C1=CC(=CC=C1)C(=O)C2=CC=CC=C2)C(=O)O
+folic acid,C1=CC(=CC=C1C(=O)NC(CCC(=O)O)C(=O)O)NCC2=CN=C3C(=N2)C(=O)NC(=N3)N
+resveratrol,C1=CC(=CC=C1C=CC2=CC(=CC(=C2)O)O)O
+phenobarbital,CCC1(C(=O)NC(=O)NC1=O)C2=CC=CC=C2
+digitonine,CC1CCC2(C(C3C(O2)C(C4C3(CCC5C4CCC6C5(CC(C(C6)OC7C(C(C(C(O7)CO)OC8C(C(C(C(O8)CO)O)OC9C(C(C(CO9)O)O)O)OC2C(C(C(C(O2)CO)O)OC2C(C(C(C(O2)CO)O)O)O)O)O)O)O)C)C)O)C)OC1
+lysine,NOT_A_VALID_SMILES
+glucose,C(C1C(C(C(C(O1)OP(=O)(O)O)O)O)O)O
+cholesterol,CC(C)CCCC(C)C1CCC2C1(CCC3C2CC=C4C3(CCC(C4)O)C)C
+rapamycin,CC1CCC2CC(C(=CC=CC=CC(CC(C(=O)C(C(C(=CC(C(=O)CC(OC(=O)C3CCCCN3C(=O)C(=O)C1(O2)O)C(C)CC4CCC(C(C4)OC)O)C)C)O)OC)C)C)C)OC
+metformin,CN(C)C(=N)N=C(N)N
+quercetin,C1=CC(=C(C=C1C2=C(C(=O)C3=C(C=C(C=C3O2)O)O)O)O)O
