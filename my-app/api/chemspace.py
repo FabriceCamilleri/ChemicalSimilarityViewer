@@ -7,18 +7,22 @@ from time import time
 from sklearn import manifold
 import umap
 
-COLUMN_NAME = "smiles"
+COLUMN_SMILES = "smiles"
+COLUMN_NAMES = "names"
 
 # This function takes as argument a dataframe and the name of the column containing the smiles.
 # The function returns a datafame of valid smiles and their tsne and umap coordinates
 # for 3 distances: Dice, Cosine and Tanimoto
 
 
-def createChemicalSpace(smiles_df, smilesColumn):
-    print("before", smiles_df)
-    print(smiles_df.columns)
-    smiles_df.rename(columns={smilesColumn: COLUMN_NAME}, inplace=True)
-    print("after", smiles_df)
+def createChemicalSpace(smiles_df, smilesColumn, nameColumn):
+    print("smiles columns: ", smilesColumn)
+    print("names columns: ", nameColumn)
+    print("before: ", smiles_df)
+    smiles_df.rename(columns={smilesColumn: COLUMN_SMILES}, inplace=True)
+    smiles_df.rename(columns={nameColumn: COLUMN_NAMES}, inplace=True)
+    print("after: ", smiles_df)
+
     # we create a df of unique smiles. This df will be used to return the coordinates
     res_df = smiles_df.iloc[:, smilesColumn].drop_duplicates()
 
@@ -119,4 +123,4 @@ def createChemicalSpace(smiles_df, smilesColumn):
 
     # now we can merge
 
-    return pd.merge(smiles_df, res_df, on=COLUMN_NAME, how='left')
+    return pd.merge(smiles_df, res_df, on=COLUMN_SMILES, how='left')

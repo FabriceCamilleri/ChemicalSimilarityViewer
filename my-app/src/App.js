@@ -6,6 +6,7 @@ import './App.css';
 const ALLOWED_FILE = 'csv'
 
 var selected_column;
+var selected_columnName;
 
 function App() {
   const [selectedFile, setSelectedFile] = useState();
@@ -16,7 +17,10 @@ function App() {
 
     setSelectedFile(event.target.files[0]);
     setDisable(true)
-    let text = document.createTextNode("Select the column containing SMILES code")
+    // let text = document.createTextNode("Select the column containing SMILES code")
+    let text = document.createElement("p")
+    text.innerHTML = "Select the column containing SMILES code"
+    text.setAttribute("id", "selectionText");
     let strong = document.createElement("strong")
     let p = document.createElement("p")
     strong.appendChild(text)
@@ -43,6 +47,7 @@ function App() {
     // url.search = new URLSearchParams(params).toString();
     // console.log(url)
     var url = updateQueryStringParameter("/file", "index", selected_column)
+    url = updateQueryStringParameter(url, "nameIndex", selected_columnName)
     fetch(
       url,
       {
@@ -97,7 +102,7 @@ function jsonToGraph(jsonFile) {
 
   for (var i = 0; i < jsonFile.length; i++) {
     dataDict.push({ x: parseFloat(jsonFile[i]["X_tsne_DiceDist"]), y: parseFloat(jsonFile[i]["Y_tsne_DiceDist"]) });
-    labelsList.push(jsonFile[i]["0"])
+    labelsList.push(jsonFile[i]["names"])
   }
 
   const colors = [
@@ -302,7 +307,8 @@ function select_column(setDisable) {
 
     cell.onclick = function () {
       clickEvent(this)
-      setDisable(false)
+      document.getElementById("selectionText").innerHTML = "Select the column containing molecule names"
+      select_columnName(setDisable)
     }
 
     cell.onmouseover = function () {
@@ -313,6 +319,20 @@ function select_column(setDisable) {
       mouseEvent(this, false)
     }
 
+  }
+
+}
+
+function select_columnName(setDisable) {
+  var table = document.getElementById("sentCSV");
+  var cells = table.getElementsByTagName("td");
+  for (var i = 0; i < cells.length; i++) {
+    var cell = cells[i];
+
+    cell.onclick = function () {
+      clickEventName(this)
+      setDisable(false)
+    }
   }
 
 }
@@ -332,6 +352,15 @@ function clickEvent(cell) {
   const columns = document.querySelectorAll(`td:nth-child(${clickedTdIndex + 1}), th:nth-child(${clickedTdIndex + 1})`);
   document.querySelectorAll('.selected').forEach(col => col.classList.remove('selected'));
   columns.forEach(col => { col.classList.add('selected'); });
+}
+
+function clickEventName(cell) {
+  const parentTds = cell.parentElement.children;
+  const clickedTdIndex = [...parentTds].findIndex(td => td == cell);
+  selected_columnName = clickedTdIndex;
+  const columns = document.querySelectorAll(`td:nth-child(${clickedTdIndex + 1}), th:nth-child(${clickedTdIndex + 1})`);
+  document.querySelectorAll('.selectedName').forEach(col => col.classList.remove('selectedName'));
+  columns.forEach(col => { col.classList.add('selectedName'); });
 }
 
 function updateQueryStringParameter(uri, key, value) {

@@ -36,10 +36,10 @@ def upload_file():
         return {'nb_molecules': -1}
 
     index = request.args.get('index')
-    print(type(index))
+    indexName = request.args.get('nameIndex')
 
     df = pd.read_csv(request.files['File'], header=None)
-    df = chemspace.createChemicalSpace(df, int(index))
+    df = chemspace.createChemicalSpace(df, int(index), int(indexName))
 
     print("res\n", df)
 
