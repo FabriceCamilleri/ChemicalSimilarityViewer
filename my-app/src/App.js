@@ -178,14 +178,17 @@ function jsonToGraph(jsonFile) {
       }
     }
   };
-
+  let ind = 0;
   let list = document.getElementById("moleculesList");
   list.innerHTML = ""
   labelsList.forEach((item) => {
     let li = document.createElement("li");
+    ind++;
+    li.setAttribute('onclick', `console.log(${ind})`)
     li.innerText = item;
     list.appendChild(li);
   })
+
 
   const myChart = new Chart(
     document.getElementById('myChart'),
@@ -278,21 +281,6 @@ function jsonToHTMLTable(json) {
 }
 
 export default App;
-
-function Send() {
-  var inputName = document.getElementById("nameinput").value;
-
-  fetch('/post', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
-    body: JSON.stringify({ title: inputName })
-  })
-    .then((response) => response.json()
-      .then(res => { document.getElementById('name').innerHTML = "hello " + res.title; }));
-}
 
 function select_column(setDisable) {
   var table = document.getElementById("sentCSV");
