@@ -153,6 +153,7 @@ function jsonToGraph(jsonFile) {
   };
 
   let list = document.getElementById("moleculesList");
+  list.innerHTML = ""
   labelsList.forEach((item) => {
     let li = document.createElement("li");
     li.innerText = item;
@@ -316,7 +317,3 @@ function updateQueryStringParameter(uri, key, value) {
     return uri + separator + key + "=" + value;
   }
 }
-
-// window.onload = highlight_row;
-
-
