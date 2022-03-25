@@ -106,12 +106,13 @@ function jsonToGraph(jsonFile) {
   ]
   const data = {
     datasets: [{
-      label: 'Results',
+      // label: 'tSNE - Dice distance',
       labels: labelsList,
       backgroundColor: colors,
       borderColor: colors,
       data: dataDict,
-      pointRadius: jsonFile.length <= 100 ? 5 : (jsonFile.length <= 1000 ? 2 : 1)
+      pointRadius: jsonFile.length <= 100 ? 5 : (jsonFile.length <= 1000 ? 2 : 1),
+      pointHoverRadius: jsonFile.length <= 100 ? 7 : (jsonFile.length <= 1000 ? 3 : 2)
     }]
   };
 
@@ -120,6 +121,18 @@ function jsonToGraph(jsonFile) {
     data: data,
     options: {
       plugins: {
+        legend: {
+          display: false
+        },
+        title: {
+          display: true,
+          text: 'tSNE - Dice distance',
+          font: {
+            size: 18,
+            weight: 'bold',
+            lineHeight: 1.2,
+          },
+        },
         tooltip: {
           callbacks: {
             label: function (ctx) {
@@ -138,13 +151,27 @@ function jsonToGraph(jsonFile) {
           position: 'bottom',
           title: {
             display: true,
-            text: 'X_tsne_DiceDist'
+            text: 'x',
+            color: 'rgb(211,211,211)',
+            font: {
+              size: 15,
+              weight: 'bold',
+              lineHeight: 1.2,
+            },
+            padding: { top: 10, left: 0, right: 0, bottom: 0 }
           }
         },
         y: {
           title: {
             display: true,
-            text: 'Y_tsne_DiceDist'
+            text: 'y',
+            color: 'rgb(211,211,211)',
+            font: {
+              size: 15,
+              weight: 'bold',
+              lineHeight: 1.2,
+            },
+            padding: { top: 0, left: 0, right: 0, bottom: 10 }
           }
         }
 
