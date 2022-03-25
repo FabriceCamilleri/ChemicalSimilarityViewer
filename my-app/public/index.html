@@ -8,6 +8,8 @@
   <meta name="theme-color" content="#000000" />
   <meta name="description" content="Web site created using create-react-app" />
   <link rel="apple-touch-icon" href="%PUBLIC_URL%/logo192.png" />
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <!--
       manifest.json provides metadata used when your web app is installed on a
       user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
@@ -44,6 +46,43 @@
   </nav>
   <noscript>You need to enable JavaScript to run this app.</noscript>
   <br>
+  <div>
+    <canvas id="myChart"></canvas>
+  </div>
+  <script>
+    const labels = [
+      'January',
+      'February',
+      'March',
+      'April',
+      'May',
+      'June',
+    ];
+
+    const data = {
+      labels: labels,
+      datasets: [{
+        label: 'My First dataset',
+        backgroundColor: 'rgb(255, 99, 132)',
+        borderColor: 'rgb(255, 99, 132)',
+        data: [0, 10, 5, 2, 20, 30, 45],
+      }]
+    };
+
+    const config = {
+      type: 'line',
+      data: data,
+      options: {}
+    };
+  </script>
+
+  <script>
+    const myChart = new Chart(
+      document.getElementById('myChart'),
+      config
+    );
+  </script>
+
 
   <div style="display: flex; margin-left: 2%; margin-right: 2%; height: 600px;">
     <div
@@ -83,7 +122,7 @@
     </div>
     <div
       style="flex:5; border: solid; padding: 1%; margin-right: 20px; height: 100%; border-radius: 20px; border-color: #0d6efdaa; text-align: center;">
-      <div id="name"></div>
+      <div id="name"><canvas id="myChart"></canvas></div>
     </div>
     <div style="flex:2; border: solid; height: 100%; border-radius: 20px; border-color: #0d6efdaa; padding: 20px">
       <h4>Molecules</h4>
