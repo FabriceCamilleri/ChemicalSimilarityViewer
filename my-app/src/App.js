@@ -152,6 +152,13 @@ function jsonToGraph(jsonFile) {
     }
   };
 
+  let list = document.getElementById("moleculesList");
+  labelsList.forEach((item) => {
+    let li = document.createElement("li");
+    li.innerText = item;
+    list.appendChild(li);
+  })
+
   const myChart = new Chart(
     document.getElementById('myChart'),
     config
