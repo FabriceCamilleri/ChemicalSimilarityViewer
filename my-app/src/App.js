@@ -88,6 +88,15 @@ function App() {
 };
 
 function jsonToGraph(jsonFile) {
+
+  var dataDict = []
+
+  console.log(jsonFile[1]["X_tsne_DiceDist"])
+
+  for (var i = 0; i < jsonFile.length; i++) {
+    dataDict.push({ x: parseFloat(jsonFile[i]["X_tsne_DiceDist"]), y: parseFloat(jsonFile[i]["Y_tsne_DiceDist"]), label: "ii" });
+  }
+
   const labels = [
     'January',
     'February',
@@ -98,19 +107,35 @@ function jsonToGraph(jsonFile) {
   ];
 
   const data = {
-    labels: labels,
     datasets: [{
       label: 'My First dataset',
       backgroundColor: 'rgb(255, 99, 132)',
       borderColor: 'rgb(255, 99, 132)',
-      data: [0, 10, 5, 2, 20, 30, 45],
+      data: dataDict
     }]
   };
 
   const config = {
-    type: 'line',
+    type: 'scatter',
     data: data,
     options: {
+      scales: {
+        x: {
+          type: 'linear',
+          position: 'bottom',
+          title: {
+            display: true,
+            text: 'X_tsne_DiceDist'
+          }
+        },
+        y: {
+          title: {
+            display: true,
+            text: 'Y_tsne_DiceDist'
+          }
+        }
+
+      }
     }
   };
 
