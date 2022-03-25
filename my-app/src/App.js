@@ -53,10 +53,13 @@ function App() {
       .then((response) => response.blob())
       .then(res => {
         res.text().then(res => {
-          document.getElementById("name").innerHTML = "";
+          var divRes = document.getElementById("name");
+          divRes.innerHTML = "";
           let canvas = document.createElement("canvas");
           canvas.setAttribute("id", "myChart");
-          document.getElementById("name").appendChild(canvas);
+          divRes.appendChild(canvas);
+          // canvas.width = divRes.offsetWidth;
+          // canvas.height = divRes.offsetHeight;
 
           // document.getElementById("name").appendChild(jsonToHTMLTable(csvToJson(res)));
           // document.getElementById("name").appendChild(jsonToGraph(csvToJson(res)));
@@ -94,7 +97,7 @@ function jsonToGraph(jsonFile) {
   console.log(jsonFile[1]["X_tsne_DiceDist"])
 
   for (var i = 0; i < jsonFile.length; i++) {
-    dataDict.push({ x: parseFloat(jsonFile[i]["X_tsne_DiceDist"]), y: parseFloat(jsonFile[i]["Y_tsne_DiceDist"]), label: "ii" });
+    dataDict.push({ x: parseFloat(jsonFile[i]["X_tsne_DiceDist"]), y: parseFloat(jsonFile[i]["Y_tsne_DiceDist"]) });
   }
 
   const labels = [
@@ -119,6 +122,8 @@ function jsonToGraph(jsonFile) {
     type: 'scatter',
     data: data,
     options: {
+      responsive: true,
+      maintainAspectRatio: false,
       scales: {
         x: {
           type: 'linear',
