@@ -93,28 +93,25 @@ function App() {
 function jsonToGraph(jsonFile) {
 
   var dataDict = []
-
-  console.log(jsonFile[1]["X_tsne_DiceDist"])
+  var labelsList = []
 
   for (var i = 0; i < jsonFile.length; i++) {
     dataDict.push({ x: parseFloat(jsonFile[i]["X_tsne_DiceDist"]), y: parseFloat(jsonFile[i]["Y_tsne_DiceDist"]) });
+    labelsList.push(jsonFile[i]["0"])
   }
 
-  const labels = [
-    'January',
-    'February',
-    'March',
-    'April',
-    'May',
-    'June',
-  ];
-
+  const colors = [
+    "rgb(176,224,230)", "rgb(135,206,250)", "rgb(0,191,255)", "rgb(30,144,255)", "rgb(95,158,160)", "rgb(106,90,205)", "rgb(0,0,255)",
+    "rgb(0,0,139)", "rgb(100,149,237)", "rgb(240,248,255)", "rgb(0, 0, 34)"
+  ]
   const data = {
     datasets: [{
-      label: 'My First dataset',
-      backgroundColor: 'rgb(255, 99, 132)',
-      borderColor: 'rgb(255, 99, 132)',
-      data: dataDict
+      label: 'Results',
+      labels: labelsList,
+      backgroundColor: colors,
+      borderColor: colors,
+      data: dataDict,
+      pointRadius: jsonFile.length <= 100 ? 5 : (jsonFile.length <= 1000 ? 2 : 1)
     }]
   };
 
@@ -122,6 +119,17 @@ function jsonToGraph(jsonFile) {
     type: 'scatter',
     data: data,
     options: {
+      plugins: {
+        tooltip: {
+          callbacks: {
+            label: function (ctx) {
+              let label = ctx.dataset.labels[ctx.dataIndex];
+              label += " (" + ctx.parsed.x + ", " + ctx.parsed.y + ")";
+              return label;
+            }
+          }
+        }
+      },
       responsive: true,
       maintainAspectRatio: false,
       scales: {
