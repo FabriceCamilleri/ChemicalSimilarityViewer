@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Chart from 'chart.js/auto';
 import logo from './logo.svg';
 import './App.css';
 
@@ -53,7 +54,13 @@ function App() {
       .then(res => {
         res.text().then(res => {
           document.getElementById("name").innerHTML = "";
-          document.getElementById("name").appendChild(jsonToHTMLTable(csvToJson(res)));
+          let canvas = document.createElement("canvas");
+          canvas.setAttribute("id", "myChart");
+          document.getElementById("name").appendChild(canvas);
+
+          // document.getElementById("name").appendChild(jsonToHTMLTable(csvToJson(res)));
+          // document.getElementById("name").appendChild(jsonToGraph(csvToJson(res)));
+          jsonToGraph(csvToJson(res));
 
         });
         let href = window.URL.createObjectURL(res)
@@ -79,6 +86,39 @@ function App() {
     </div>
   )
 };
+
+function jsonToGraph(jsonFile) {
+  const labels = [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+  ];
+
+  const data = {
+    labels: labels,
+    datasets: [{
+      label: 'My First dataset',
+      backgroundColor: 'rgb(255, 99, 132)',
+      borderColor: 'rgb(255, 99, 132)',
+      data: [0, 10, 5, 2, 20, 30, 45],
+    }]
+  };
+
+  const config = {
+    type: 'line',
+    data: data,
+    options: {
+    }
+  };
+
+  const myChart = new Chart(
+    document.getElementById('myChart'),
+    config
+  );
+}
 
 
 function csvToJson(csv) {
