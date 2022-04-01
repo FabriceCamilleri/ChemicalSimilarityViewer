@@ -42,7 +42,7 @@ def upload_file():
         request.args.get('d2')), int(request.args.get('d3'))]
     # "[true, false]
 
-    df = pd.read_csv(request.files['File'], header=None)
+    df = pd.read_csv(request.files['File'], sep=";|,", header=None)
     df = chemspace.createChemicalSpace(
         df, int(index), int(indexName), listAlgo, listDist)
 
