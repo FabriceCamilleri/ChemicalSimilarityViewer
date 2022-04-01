@@ -15,7 +15,7 @@ COLUMN_NAMES = "names"
 # for 3 distances: Dice, Cosine and Tanimoto
 
 
-def createChemicalSpace(smiles_df, smilesColumn, nameColumn, listAlgo, listdist):
+def createChemicalSpace(smiles_df, smilesColumn, nameColumn, listAlgo, listDist):
 
     smiles_df.rename(columns={smilesColumn: COLUMN_SMILES}, inplace=True)
     smiles_df.rename(columns={nameColumn: COLUMN_NAMES}, inplace=True)
@@ -70,53 +70,86 @@ def createChemicalSpace(smiles_df, smilesColumn, nameColumn, listAlgo, listdist)
     print('Size of Cosine distance matrix:', np.asarray(distCos).shape)
     print('Size of Tanimoto distance matrix:', np.asarray(distTanimoto).shape)
 
+    coords = pd.DataFrame({'A': []})
+
     # T-sne step
     if(listAlgo[0]):
         print('t-SNE of chemical space ...', end=' ')
         tsne = manifold.TSNE(n_components=2, init='random',
                              random_state=42, metric='precomputed')
-        coorDice = tsne.fit_transform(np.asarray(distDice))
-        coorCos = tsne.fit_transform(np.asarray(distCos))
-        coorTanimoto = tsne.fit_transform(np.asarray(distTanimoto))
 
-        coorDice = pd.DataFrame(coorDice)
-        coorDice.columns = ['X_tsne_DiceDist', 'Y_tsne_DiceDist']
-        coorCos = pd.DataFrame(coorCos)
-        coorCos.columns = ['X_tsne_CosDist', 'Y_tsne_CosDist']
-        coorTanimoto = pd.DataFrame(coorTanimoto)
-        coorTanimoto.columns = ['X_tsne_TanimotoDist', 'Y_tsne_TanimotoDist']
+        if(listDist[0]):
+            coorDice = tsne.fit_transform(np.asarray(distDice))
+            coorDice = pd.DataFrame(coorDice)
+            coorDice.columns = ['X_tsne_DiceDist', 'Y_tsne_DiceDist']
+            if(coords.empty):
+                coords = pd.concat(
+                    [coorDice.reset_index(drop=True)], axis=1, sort=False)
+            else:
+                coords = pd.concat([coords.reset_index(
+                    drop=True), coorDice.reset_index(drop=True)], axis=1, sort=False)
 
-        coords = pd.concat([coorDice.reset_index(drop=True),
-                            coorCos.reset_index(drop=True)], axis=1, sort=False)
-        coords = pd.concat([coords.reset_index(
-            drop=True), coorTanimoto.reset_index(drop=True)], axis=1, sort=False)
+        if(listDist[1]):
+            coorCos = tsne.fit_transform(np.asarray(distCos))
+            coorCos = pd.DataFrame(coorCos)
+            coorCos.columns = ['X_tsne_CosDist', 'Y_tsne_CosDist']
+            if(coords.empty):
+                coords = pd.concat(
+                    [coorCos.reset_index(drop=True)], axis=1, sort=False)
+            else:
+                coords = pd.concat([coords.reset_index(
+                    drop=True), coorCos.reset_index(drop=True)], axis=1, sort=False)
+
+        if(listDist[2]):
+            coorTanimoto = tsne.fit_transform(np.asarray(distTanimoto))
+            coorTanimoto = pd.DataFrame(coorTanimoto)
+            coorTanimoto.columns = [
+                'X_tsne_TanimotoDist', 'Y_tsne_TanimotoDist']
+            if(coords.empty):
+                coords = pd.concat(
+                    [coorTanimoto.reset_index(drop=True)], axis=1, sort=False)
+            else:
+                coords = pd.concat([coords.reset_index(
+                    drop=True), coorTanimoto.reset_index(drop=True)], axis=1, sort=False)
 
     # Umap step
     if(listAlgo[1]):
         print('Umap of chemical space ...', end=' ')
         U = umap.UMAP(metric='precomputed', random_state=42)
-        coorDiceUmap = U.fit_transform(np.asarray(distDice))
-        coorCosUmap = U.fit_transform(np.asarray(distCos))
-        coorTanimotoUmap = U.fit_transform(np.asarray(distTanimoto))
 
-        coorDiceUmap = pd.DataFrame(coorDiceUmap)
-        coorDiceUmap.columns = ['X_umap_DiceDist', 'Y_umap_DiceDist']
-        coorCosUmap = pd.DataFrame(coorCosUmap)
-        coorCosUmap.columns = ['X_umap_CosDist', 'Y_umap_CosDist']
-        coorTanimotoUmap = pd.DataFrame(coorTanimotoUmap)
-        coorTanimotoUmap.columns = [
-            'X_umap_TanimotoDist', 'Y_umap_TanimotoDist']
+        if(listDist[0]):
+            coorDiceUmap = U.fit_transform(np.asarray(distDice))
+            coorDiceUmap = pd.DataFrame(coorDiceUmap)
+            coorDiceUmap.columns = ['X_umap_DiceDist', 'Y_umap_DiceDist']
+            if(coords.empty):
+                coords = pd.concat(
+                    [coorDiceUmap.reset_index(drop=True)], axis=1, sort=False)
+            else:
+                coords = pd.concat([coords.reset_index(
+                    drop=True), coorDiceUmap.reset_index(drop=True)], axis=1, sort=False)
 
-        if("coords" in locals()):
-            coords = pd.concat([coords.reset_index(
-                drop=True), coorDiceUmap.reset_index(drop=True)], axis=1, sort=False)
-            coords = pd.concat([coords.reset_index(drop=True),
-                                coorCosUmap.reset_index(drop=True)], axis=1, sort=False)
-        else:
-            coords = pd.concat([coorDiceUmap.reset_index(drop=True),
-                                coorCosUmap.reset_index(drop=True)], axis=1, sort=False)
-        coords = pd.concat([coords.reset_index(
-            drop=True), coorTanimotoUmap.reset_index(drop=True)], axis=1, sort=False)
+        if(listDist[1]):
+            coorCosUmap = U.fit_transform(np.asarray(distCos))
+            coorCosUmap = pd.DataFrame(coorCosUmap)
+            coorCosUmap.columns = ['X_umap_CosDist', 'Y_umap_CosDist']
+            if(coords.empty):
+                coords = pd.concat(
+                    [coorCosUmap.reset_index(drop=True)], axis=1, sort=False)
+            else:
+                coords = pd.concat([coords.reset_index(
+                    drop=True), coorCosUmap.reset_index(drop=True)], axis=1, sort=False)
+
+        if(listDist[2]):
+            coorTanimotoUmap = U.fit_transform(np.asarray(distTanimoto))
+            coorTanimotoUmap = pd.DataFrame(coorTanimotoUmap)
+            coorTanimotoUmap.columns = [
+                'X_umap_TanimotoDist', 'Y_umap_TanimotoDist']
+            if(coords.empty):
+                coords = pd.concat(
+                    [coorTanimotoUmap.reset_index(drop=True)], axis=1, sort=False)
+            else:
+                coords = pd.concat([coords.reset_index(
+                    drop=True), coorTanimotoUmap.reset_index(drop=True)], axis=1, sort=False)
 
     # finally we concat the coordinates with the res dataframe containing the smiles
 

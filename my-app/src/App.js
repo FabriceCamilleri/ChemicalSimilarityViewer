@@ -55,6 +55,12 @@ function App() {
     var algo2 = + document.getElementById("algo2").checked
     url = updateQueryStringParameter(url, "algo1", algo1)
     url = updateQueryStringParameter(url, "algo2", algo2)
+    var d1 = + document.getElementById("d1").checked
+    var d2 = + document.getElementById("d2").checked
+    var d3 = + document.getElementById("d3").checked
+    url = updateQueryStringParameter(url, "d1", d1)
+    url = updateQueryStringParameter(url, "d2", d2)
+    url = updateQueryStringParameter(url, "d3", d3)
     fetch(
       url,
       {
