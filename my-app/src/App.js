@@ -13,7 +13,10 @@ function App() {
   const [disable, setDisable] = useState(true);
 
   const changeHandler = (event) => {
-    if (!event.target.files[0] || event.target.files[0].name.split('.')[1] != ALLOWED_FILE) return
+    if (!event.target.files[0] || event.target.files[0].name.split('.')[1] != ALLOWED_FILE) {
+      document.getElementById("name").innerHTML = "The file extension is not correct, please submit a .csv file";
+      return;
+    }
 
     setSelectedFile(event.target.files[0]);
     setDisable(true)
