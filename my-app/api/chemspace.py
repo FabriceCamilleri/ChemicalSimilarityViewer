@@ -15,13 +15,10 @@ COLUMN_NAMES = "names"
 # for 3 distances: Dice, Cosine and Tanimoto
 
 
-def createChemicalSpace(smiles_df, smilesColumn, nameColumn):
-    print("smiles columns: ", smilesColumn)
-    print("names columns: ", nameColumn)
-    print("before: ", smiles_df)
+def createChemicalSpace(smiles_df, smilesColumn, nameColumn, listAlgo, listdist):
+
     smiles_df.rename(columns={smilesColumn: COLUMN_SMILES}, inplace=True)
     smiles_df.rename(columns={nameColumn: COLUMN_NAMES}, inplace=True)
-    print("after: ", smiles_df)
 
     # we create a df of unique smiles. This df will be used to return the coordinates
     res_df = smiles_df.iloc[:, smilesColumn].drop_duplicates()
@@ -74,14 +71,16 @@ def createChemicalSpace(smiles_df, smilesColumn, nameColumn):
     print('Size of Tanimoto distance matrix:', np.asarray(distTanimoto).shape)
 
     # T-sne step
-    print('t-SNE of chemical space ...', end=' ')
-    tsne = manifold.TSNE(n_components=2, init='random',
-                         random_state=42, metric='precomputed')
-    coorDice = tsne.fit_transform(np.asarray(distDice))
-    coorCos = tsne.fit_transform(np.asarray(distCos))
-    coorTanimoto = tsne.fit_transform(np.asarray(distTanimoto))
+    if(listAlgo[0]):
+        print('t-SNE of chemical space ...', end=' ')
+        tsne = manifold.TSNE(n_components=2, init='random',
+                             random_state=42, metric='precomputed')
+        coorDice = tsne.fit_transform(np.asarray(distDice))
+        coorCos = tsne.fit_transform(np.asarray(distCos))
+        coorTanimoto = tsne.fit_transform(np.asarray(distTanimoto))
 
     # Umap step
+    if(listAlgo[1]):
     print('Umap of chemical space ...', end=' ')
     U = umap.UMAP(metric='precomputed', random_state=42)
     coorDiceUmap = U.fit_transform(np.asarray(distDice))
