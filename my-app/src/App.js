@@ -8,6 +8,7 @@ const ALLOWED_FILE = 'csv'
 var selected_column;
 var selected_columnName;
 var jsonResult;
+var myChart;
 
 function App() {
   const [selectedFile, setSelectedFile] = useState();
@@ -135,16 +136,24 @@ function createMenu(checkList) {
   let selectAlgo = document.createElement('select')
   selectAlgo.setAttribute('name', 'algoGr')
   selectAlgo.setAttribute('id', 'algoGr')
+  selectAlgo.addEventListener('change', () => {
+    myChart.destroy();
+    jsonToGraph(jsonResult);
+  })
 
   // selectAlgo.setAttribute('onChange', "jsonToGraph(jsonResult)")
-  selectAlgo.onChange = function () { jsonToGraph(jsonResult); };
+  // selectAlgo.onChange = function () { jsonToGraph(jsonResult); };
 
   let selectDistance = document.createElement('select')
   selectDistance.setAttribute('name', 'distGr')
   selectDistance.setAttribute('id', 'distGr')
+  selectDistance.addEventListener('change', () => {
+    myChart.destroy();
+    jsonToGraph(jsonResult);
+  })
   // selectDistance.setAttribute('onChange', "jsonToGraph(jsonResult)")
 
-  selectDistance.onChange = function () { jsonToGraph(jsonResult); };
+  // selectDistance.onChange = function () { jsonToGraph(jsonResult); };
 
   let option1 = document.createElement('option')
   option1.setAttribute('value', 'tsne')
@@ -283,7 +292,7 @@ function jsonToGraph(jsonFile) {
   })
 
 
-  const myChart = new Chart(
+  myChart = new Chart(
     document.getElementById('myChart'),
     config
   );
