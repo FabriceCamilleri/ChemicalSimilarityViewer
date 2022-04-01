@@ -37,9 +37,12 @@ def upload_file():
 
     index = request.args.get('index')
     indexName = request.args.get('nameIndex')
+    listAlgo = [int(request.args.get('algo1')), int(request.args.get('algo2'))]
+    # "[true, false]
 
     df = pd.read_csv(request.files['File'], header=None)
-    df = chemspace.createChemicalSpace(df, int(index), int(indexName))
+    df = chemspace.createChemicalSpace(
+        df, int(index), int(indexName), listAlgo, [1, 1, 1])
 
     print("res\n", df)
 

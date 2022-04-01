@@ -79,44 +79,50 @@ def createChemicalSpace(smiles_df, smilesColumn, nameColumn, listAlgo, listdist)
         coorCos = tsne.fit_transform(np.asarray(distCos))
         coorTanimoto = tsne.fit_transform(np.asarray(distTanimoto))
 
+        coorDice = pd.DataFrame(coorDice)
+        coorDice.columns = ['X_tsne_DiceDist', 'Y_tsne_DiceDist']
+        coorCos = pd.DataFrame(coorCos)
+        coorCos.columns = ['X_tsne_CosDist', 'Y_tsne_CosDist']
+        coorTanimoto = pd.DataFrame(coorTanimoto)
+        coorTanimoto.columns = ['X_tsne_TanimotoDist', 'Y_tsne_TanimotoDist']
+
+        coords = pd.concat([coorDice.reset_index(drop=True),
+                            coorCos.reset_index(drop=True)], axis=1, sort=False)
+        coords = pd.concat([coords.reset_index(
+            drop=True), coorTanimoto.reset_index(drop=True)], axis=1, sort=False)
+
     # Umap step
     if(listAlgo[1]):
-    print('Umap of chemical space ...', end=' ')
-    U = umap.UMAP(metric='precomputed', random_state=42)
-    coorDiceUmap = U.fit_transform(np.asarray(distDice))
-    coorCosUmap = U.fit_transform(np.asarray(distCos))
-    coorTanimotoUmap = U.fit_transform(np.asarray(distTanimoto))
+        print('Umap of chemical space ...', end=' ')
+        U = umap.UMAP(metric='precomputed', random_state=42)
+        coorDiceUmap = U.fit_transform(np.asarray(distDice))
+        coorCosUmap = U.fit_transform(np.asarray(distCos))
+        coorTanimotoUmap = U.fit_transform(np.asarray(distTanimoto))
 
-    coorDice = pd.DataFrame(coorDice)
-    coorDice.columns = ['X_tsne_DiceDist', 'Y_tsne_DiceDist']
-    coorCos = pd.DataFrame(coorCos)
-    coorCos.columns = ['X_tsne_CosDist', 'Y_tsne_CosDist']
-    coorTanimoto = pd.DataFrame(coorTanimoto)
-    coorTanimoto.columns = ['X_tsne_TanimotoDist', 'Y_tsne_TanimotoDist']
+        coorDiceUmap = pd.DataFrame(coorDiceUmap)
+        coorDiceUmap.columns = ['X_umap_DiceDist', 'Y_umap_DiceDist']
+        coorCosUmap = pd.DataFrame(coorCosUmap)
+        coorCosUmap.columns = ['X_umap_CosDist', 'Y_umap_CosDist']
+        coorTanimotoUmap = pd.DataFrame(coorTanimotoUmap)
+        coorTanimotoUmap.columns = [
+            'X_umap_TanimotoDist', 'Y_umap_TanimotoDist']
 
-    coorDiceUmap = pd.DataFrame(coorDiceUmap)
-    coorDiceUmap.columns = ['X_umap_DiceDist', 'Y_umap_DiceDist']
-    coorCosUmap = pd.DataFrame(coorCosUmap)
-    coorCosUmap.columns = ['X_umap_CosDist', 'Y_umap_CosDist']
-    coorTanimotoUmap = pd.DataFrame(coorTanimotoUmap)
-    coorTanimotoUmap.columns = ['X_umap_TanimotoDist', 'Y_umap_TanimotoDist']
-
-    coords = pd.concat([coorDice.reset_index(drop=True),
-                       coorCos.reset_index(drop=True)], axis=1, sort=False)
-    coords = pd.concat([coords.reset_index(
-        drop=True), coorTanimoto.reset_index(drop=True)], axis=1, sort=False)
-
-    coords = pd.concat([coords.reset_index(
-        drop=True), coorDiceUmap.reset_index(drop=True)], axis=1, sort=False)
-    coords = pd.concat([coords.reset_index(drop=True),
-                       coorCosUmap.reset_index(drop=True)], axis=1, sort=False)
-    coords = pd.concat([coords.reset_index(
-        drop=True), coorTanimotoUmap.reset_index(drop=True)], axis=1, sort=False)
+        if("coords" in locals()):
+            coords = pd.concat([coords.reset_index(
+                drop=True), coorDiceUmap.reset_index(drop=True)], axis=1, sort=False)
+            coords = pd.concat([coords.reset_index(drop=True),
+                                coorCosUmap.reset_index(drop=True)], axis=1, sort=False)
+        else:
+            coords = pd.concat([coorDiceUmap.reset_index(drop=True),
+                                coorCosUmap.reset_index(drop=True)], axis=1, sort=False)
+        coords = pd.concat([coords.reset_index(
+            drop=True), coorTanimotoUmap.reset_index(drop=True)], axis=1, sort=False)
 
     # finally we concat the coordinates with the res dataframe containing the smiles
 
-    res_df = pd.concat([res_df.reset_index(drop=True),
-                       coords.reset_index(drop=True)], axis=1, sort=False)
+    if (listAlgo[0] or listAlgo[1]):
+        res_df = pd.concat([res_df.reset_index(drop=True),
+                            coords.reset_index(drop=True)], axis=1, sort=False)
 
     print('done\t')
 

@@ -51,6 +51,10 @@ function App() {
     // console.log(url)
     var url = updateQueryStringParameter("/file", "index", selected_column)
     url = updateQueryStringParameter(url, "nameIndex", selected_columnName)
+    var algo1 = + document.getElementById("algo1").checked
+    var algo2 = + document.getElementById("algo2").checked
+    url = updateQueryStringParameter(url, "algo1", algo1)
+    url = updateQueryStringParameter(url, "algo2", algo2)
     fetch(
       url,
       {
