@@ -16,7 +16,8 @@ function App() {
 
   const changeHandler = (event) => {
     if (!event.target.files[0] || event.target.files[0].name.split('.')[1] != ALLOWED_FILE) {
-      document.getElementById("name").innerHTML = "The file extension is not correct, please submit a .csv file";
+      document.getElementById("graphMenu").innerHTML = "";
+      document.getElementById("chartDiv").innerHTML = "The file extension is not correct, please submit a .csv file";
       return;
     }
 
@@ -33,9 +34,10 @@ function App() {
     let reader = new FileReader();
     reader.readAsText(event.target.files[0]);
     reader.onload = function () {
-      document.getElementById("name").innerHTML = "";
-      document.getElementById("name").appendChild(p);
-      document.getElementById("name").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
+      document.getElementById("graphMenu").innerHTML = "";
+      document.getElementById("chartDiv").innerHTML = "";
+      document.getElementById("chartDiv").appendChild(p);
+      document.getElementById("chartDiv").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
       select_column(setDisable)
     }
 
@@ -74,7 +76,7 @@ function App() {
       .then((response) => response.blob())
       .then(res => {
         res.text().then(res => {
-          var divRes = document.getElementById("name");
+          var divRes = document.getElementById("chartDiv");
           divRes.innerHTML = "";
           let canvas = document.createElement("canvas");
           canvas.setAttribute("id", "myChart");
@@ -92,12 +94,12 @@ function App() {
 
       })
       .catch((error) => {
-        document.getElementById('name').innerHTML = "Erreur";
+        document.getElementById('chartDiv').innerHTML = "Erreur";
       });
     let loader = document.createElement("div")
     loader.setAttribute('class', 'loader')
-    document.getElementById("name").innerHTML = "";
-    document.getElementById("name").appendChild(loader)
+    document.getElementById("chartDiv").innerHTML = "";
+    document.getElementById("chartDiv").appendChild(loader)
   };
 
   return (
@@ -226,15 +228,15 @@ function jsonToGraph(jsonFile) {
         legend: {
           display: false
         },
-        title: {
-          display: true,
-          text: `${algo} - ${distance}`,
-          font: {
-            size: 18,
-            weight: 'bold',
-            lineHeight: 1.2,
-          },
-        },
+        // title: {
+        //   display: true,
+        //   text: `${algo} - ${distance}`,
+        //   font: {
+        //     size: 18,
+        //     weight: 'bold',
+        //     lineHeight: 1.2,
+        //   },
+        // },
         tooltip: {
           callbacks: {
             label: function (ctx) {
