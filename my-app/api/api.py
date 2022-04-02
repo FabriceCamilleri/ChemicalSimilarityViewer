@@ -5,7 +5,7 @@ import os
 from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import pandas as pd
-import chemspace
+import .chemspace
 
 
 UPLOAD_FOLDER = '/path/to/the/uploads'
