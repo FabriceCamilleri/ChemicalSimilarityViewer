@@ -95,6 +95,8 @@ function App() {
           window.location.assign(href)
         })
 
+        let dlLabel = document.getElementById('dlLabel').style.display = "block"
+
       })
       .catch((error) => {
         document.getElementById('chartDiv').innerHTML = "Erreur";
@@ -109,7 +111,7 @@ function App() {
     <div>
       <input className="form-control-file" type="file" name="file" onChange={changeHandler} />
       <br />
-      <div>
+      <div style={{ textAlign: "center" }}>
         <button id="submitButton" className="btn btn-primary" disabled={disable} onClick={handleSubmission}>Submit</button>
       </div>
     </div>
