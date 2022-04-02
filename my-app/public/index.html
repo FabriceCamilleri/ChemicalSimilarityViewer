@@ -132,14 +132,14 @@
   </div>
   <script>
     function dlButton() {
-      let dl = document.getElementById('dlButton')
-      dl.classList.add("load");
+      let dlButton = document.getElementById('dlButton')
+      dlButton.classList.add("load");
       setTimeout(function () {
-        document.getElementById('dlButton').classList.add("done");
+        dlButton.classList.add("done");
       }, 1000);
       setTimeout(function () {
-        document.getElementById('dlButton').classList.remove("load");
-        document.getElementById('dlButton').classList.remove("done");
+        dlButton.classList.remove("load");
+        dlButton.classList.remove("done");
       }, 5000);
 
     }</script>

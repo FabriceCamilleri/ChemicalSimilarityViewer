@@ -92,12 +92,8 @@ function App() {
         let href = window.URL.createObjectURL(res)
         document.getElementById('dlButton').style.display = "block"
         document.getElementById('dlButton').addEventListener('click', () => {
-          //window.open(href, 'result.csv')
           window.location.assign(href)
         })
-        //document.getElementById('download').innerHTML = `<hr/> <a class='btn btn-danger' role='button' href=${href} download='result.csv'>Download</a>`;
-        // document.getElementById('btn-circle-download').setAttribute('href', href)
-        // document.getElementById('btn-circle-download').setAttribute('download', 'result.csv')
 
       })
       .catch((error) => {
@@ -122,26 +118,6 @@ function App() {
 
 
 function createMenu(checkList) {
-
-  // let comb = [['X_tsne_DiceDist', 'Y_tsne_DiceDist'], // 1, 0, 1, 0, 0 0
-  // ['X_tsne_CosDist', 'Y_tsne_CosDist'],//1, 0, 0, 1, 0 1
-  // ['X_tsne_TanimotoDist', 'Y_tsne_TanimotoDist'],//1, 0, 0, 0, 1
-  // ['X_umap_DiceDist', 'Y_umap_DiceDist'],// 0, 1, 1, 0, 0
-  // ['X_umap_CosDist', 'Y_umap_CosDist'],// 0, 1, 0, 1, 0
-  // ['X_umap_TanimotoDist', 'Y_umap_TanimotoDist']]// 0, 1, 0, 0, 1
-
-
-
-  //   <label for="algoGr">Choose algo:</label>
-
-  // <select name="algoGr" id="algoGr">
-  //     <option value="0">Dog</option>
-  //     <option value="1">Cat</option>
-  //     <option value="2">Hamster</option>
-  //     <option value="parrot">Parrot</option>
-  //     <option value="spider">Spider</option>
-  //     <option value="goldfish">Goldfish</option>
-  // </select>
   let selectAlgo = document.createElement('select')
   selectAlgo.setAttribute('name', 'algoGr')
   selectAlgo.setAttribute('id', 'algoGr')
@@ -150,9 +126,6 @@ function createMenu(checkList) {
     jsonToGraph(jsonResult);
   })
 
-  // selectAlgo.setAttribute('onChange', "jsonToGraph(jsonResult)")
-  // selectAlgo.onChange = function () { jsonToGraph(jsonResult); };
-
   let selectDistance = document.createElement('select')
   selectDistance.setAttribute('name', 'distGr')
   selectDistance.setAttribute('id', 'distGr')
@@ -160,9 +133,6 @@ function createMenu(checkList) {
     myChart.destroy();
     jsonToGraph(jsonResult);
   })
-  // selectDistance.setAttribute('onChange', "jsonToGraph(jsonResult)")
-
-  // selectDistance.onChange = function () { jsonToGraph(jsonResult); };
 
   let option1 = document.createElement('option')
   option1.setAttribute('value', 'tsne')
@@ -366,28 +336,6 @@ function jsonToHTMLTable(json) {
   div.setAttribute('style', 'max-height:570px; max-width:1000px;')
   div.setAttribute('class', 'table-responsive text-nowrap scrollbar-primary')
   div.appendChild(table)
-  var styles = `
-        .scrollbar - primary:: -webkit - scrollbar {
-          width: 17px;
-          background- color: #F5F5F5;
-    }
-
-      .scrollbar - primary:: -webkit - scrollbar - thumb {
-        border- radius: 10px;
-    -webkit - box - shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-    background - color: #4285F4;
-  }
-    
-    .scrollbar - primary {
-    scrollbar - color: #4285F4 #F5F5F5;
-  }
-  `
-
-  var styleSheet = document.createElement("style")
-  styleSheet.innerText = styles
-  document.head.appendChild(styleSheet)
-
-
 
   return div;
 }
