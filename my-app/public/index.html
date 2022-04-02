@@ -97,7 +97,20 @@
         </select> -->
       </p>
       <hr />
-
+      <div style="display: none;" class="btn-circle-download" id="dlButton" onclick="dlButton()">
+        <svg id="arrow" width="14px" height="20px" viewBox="17 14 14 20">
+          <path d="M24,15 L24,32"></path>
+          <polyline points="30 27 24 33 18 27"></polyline>
+        </svg>
+        <svg id="check" width="21px" height="15px" viewBox="13 17 21 15">
+          <polyline points="32.5 18.5 20 31 14.5 25.5"></polyline>
+        </svg>
+        <svg id="border" width="48px" height="48px" viewBox="0 0 48 48">
+          <path
+            d="M24,1 L24,1 L24,1 C36.7025492,1 47,11.2974508 47,24 L47,24 L47,24 C47,36.7025492 36.7025492,47 24,47 L24,47 L24,47 C11.2974508,47 1,36.7025492 1,24 L1,24 L1,24 C1,11.2974508 11.2974508,1 24,1 L24,1 Z">
+          </path>
+        </svg>
+      </div>
       <div id="download"></div>
 
     </div>
@@ -109,13 +122,27 @@
         <canvas id=" myChart"></canvas>
       </div>
     </div>
-    <div style="flex:2; border: solid; height: 100%; border-radius: 20px; border-color: #0d6efdaa; padding: 20px">
+    <div class="scrollbar-primary"
+      style="overflow-y: auto; height:400px; flex:2; border: solid; height: 100%; border-radius: 20px; border-color: #0d6efdaa; padding: 20px">
       <h4>Molecules</h4>
       <hr />
       <ul id="moleculesList">
       </ul>
     </div>
   </div>
+  <script>
+    function dlButton() {
+      let dl = document.getElementById('dlButton')
+      dl.classList.add("load");
+      setTimeout(function () {
+        document.getElementById('dlButton').classList.add("done");
+      }, 1000);
+      setTimeout(function () {
+        document.getElementById('dlButton').classList.remove("load");
+        document.getElementById('dlButton').classList.remove("done");
+      }, 5000);
+
+    }</script>
   <!--
       This HTML file is a template.
       If you open it directly in the browser, you will see an empty page.

@@ -90,7 +90,14 @@ function App() {
 
         });
         let href = window.URL.createObjectURL(res)
-        document.getElementById('download').innerHTML = `<hr/> <a class='btn btn-danger' role='button' href=${href} download='result.csv'>Download</a>`;
+        document.getElementById('dlButton').style.display = "block"
+        document.getElementById('dlButton').addEventListener('click', () => {
+          //window.open(href, 'result.csv')
+          window.location.assign(href)
+        })
+        //document.getElementById('download').innerHTML = `<hr/> <a class='btn btn-danger' role='button' href=${href} download='result.csv'>Download</a>`;
+        // document.getElementById('btn-circle-download').setAttribute('href', href)
+        // document.getElementById('btn-circle-download').setAttribute('download', 'result.csv')
 
       })
       .catch((error) => {
@@ -197,8 +204,6 @@ function jsonToGraph(jsonFile) {
   let algo = document.getElementById("algoGr").value
   let distance = document.getElementById("distGr").value
 
-  console.log(`X_${algo}_${distance}`);
-  console.log(jsonFile);
   for (var i = 0; i < jsonFile.length; i++) {
     dataDict.push({ x: parseFloat(jsonFile[i][`X_${algo}_${distance}`]), y: parseFloat(jsonFile[i][`Y_${algo}_${distance}`]) });
     labelsList.push(jsonFile[i]["names"])
