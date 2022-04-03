@@ -15,7 +15,6 @@ function App() {
 
   const changeHandler = (event) => {
     var filename = document.getElementById('chooseFile').value;
-
     // var filename = event.target.files[0].name;
 
     let fileUp = document.getElementsByClassName('file-upload')[0]
@@ -63,8 +62,6 @@ function App() {
       document.getElementById("chartDiv").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
       select_column(setDisable)
     }
-
-
   };
 
   const handleSubmission = () => {
@@ -130,10 +127,8 @@ function App() {
     document.getElementById("chartDiv").appendChild(loader)
   };
 
-  // let chooseFile = document.getElementById('chooseFile')
-  // chooseFile.addEventListener('change', changeHandler)
-
   document.getElementById('chooseFile').addEventListener('change', (e) => changeHandler(e))
+
   return (
     <div style={{ textAlign: "center" }}>
       <button id="submitButton" className="btn btn-primary" disabled={disable} onClick={handleSubmission}>Submit</button>
