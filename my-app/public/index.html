@@ -55,8 +55,14 @@
       style="flex:2; border: solid; margin-right: 20px; height: 100%; border-radius: 20px; border-color: #0d6efdaa; padding: 20px">
       <h4 style="text-align: center;">Parameters</h4>
       <hr />
-
-      <div id="file"></div>
+      <div class="file-upload">
+        <div class="file-select">
+          <div style="border-radius:7px;" class="file-select-button" id="fileName">Choose File</div>
+          <div class="file-select-name" id="noFile">No file chosen...</div>
+          <input type="file" name="chooseFile" id="chooseFile">
+        </div>
+      </div>
+      <br>
       <div id="root"></div>
       <!--<p><label for="filecsv">Choose a csv file:</label>
 
@@ -67,7 +73,7 @@
       <button type="submit" class="btn btn-primary">Submit</button> -->
       <hr />
       <p>
-        <label style="text-align: center;" for="algo">Choose algorithm(s)</label>
+        <label for="algo">Choose algorithm(s)</label>
         <br />
         <input class="inp-cbx" id="algo1" type="checkbox" Checked="checked">
         <label class="cbx" for="algo1"><span>
@@ -90,7 +96,7 @@
         </select> -->
       </p>
       <p>
-        <label style="text-align: center;" for="distance">Choose distance(s)</label>
+        <label for="distance">Choose distance(s)</label>
 
         <br />
         <!-- <input type="checkbox" id="d1" name="d1" value="dice" Checked="checked">

@@ -9,13 +9,36 @@ var selected_column;
 var selected_columnName;
 var jsonResult;
 var myChart;
-
 function App() {
   const [selectedFile, setSelectedFile] = useState();
   const [disable, setDisable] = useState(true);
 
   const changeHandler = (event) => {
-    if (!event.target.files[0] || event.target.files[0].name.split('.')[1] != ALLOWED_FILE) {
+    var filename = document.getElementById('chooseFile').value;
+
+    // var filename = event.target.files[0].name;
+
+    let fileUp = document.getElementsByClassName('file-upload')[0]
+    let noFile = document.getElementById('noFile')
+    if (/^\s*$/.test(filename)) {
+      fileUp.classList.remove('active');
+      fileUp.classList.remove('wrong');
+      noFile.innerHTML = "No file chosen...";
+    }
+    else {
+      fileUp.classList.remove('wrong');
+      fileUp.classList.add('active');
+      let filena = filename.replace("C:\\fakepath\\", "")
+      noFile.innerHTML = filena.length > 28 ? filena.substring(0, 25) + '...' : filena;
+    }
+
+    if (!event.target.files[0]) {
+      return
+    }
+    if (event.target.files[0].name.split('.')[1] != ALLOWED_FILE) {
+
+      fileUp.classList.remove('active');
+      fileUp.classList.add('wrong');
       document.getElementById("graphMenu").innerHTML = "";
       document.getElementById("chartDiv").innerHTML = "The file extension is not correct, please submit a .csv file";
       return;
@@ -23,7 +46,7 @@ function App() {
 
     setSelectedFile(event.target.files[0]);
     setDisable(true)
-    // let text = document.createTextNode("Select the column containing SMILES code")
+
     let text = document.createElement("p")
     text.innerHTML = "Select the column containing SMILES code"
     text.setAttribute("id", "selectionText");
@@ -95,7 +118,7 @@ function App() {
           window.location.assign(href)
         })
 
-        let dlLabel = document.getElementById('dlLabel').style.display = "block"
+        document.getElementById('dlLabel').style.display = "block"
 
       })
       .catch((error) => {
@@ -107,13 +130,13 @@ function App() {
     document.getElementById("chartDiv").appendChild(loader)
   };
 
+  // let chooseFile = document.getElementById('chooseFile')
+  // chooseFile.addEventListener('change', changeHandler)
+
+  document.getElementById('chooseFile').addEventListener('change', (e) => changeHandler(e))
   return (
-    <div>
-      <input className="form-control-file" type="file" name="file" onChange={changeHandler} />
-      <br />
-      <div style={{ textAlign: "center" }}>
-        <button id="submitButton" className="btn btn-primary" disabled={disable} onClick={handleSubmission}>Submit</button>
-      </div>
+    <div style={{ textAlign: "center" }}>
+      <button id="submitButton" className="btn btn-primary" disabled={disable} onClick={handleSubmission}>Submit</button>
     </div>
   )
 };
@@ -160,10 +183,23 @@ function createMenu(checkList) {
   if (checkList[3]) selectDistance.appendChild(option4)
   if (checkList[4]) selectDistance.appendChild(option5)
 
+  let algoLabel = document.createElement('label')
+  algoLabel.setAttribute('style', 'padding-right: 5px')
+  algoLabel.innerHTML = "Algorithm"
+  let l = document.createElement('label')
+  l.setAttribute('style', 'padding-left: 8px; padding-right: 8px')
+  l.innerHTML = "-"
+  let distanceLabel = document.createElement('label')
+  distanceLabel.setAttribute('style', 'padding-right: 5px')
+  distanceLabel.innerHTML = "Distance"
 
-  document.getElementById('graphMenu').innerHTML = ""
-  document.getElementById('graphMenu').appendChild(selectAlgo)
-  document.getElementById('graphMenu').appendChild(selectDistance)
+  let graphMenu = document.getElementById('graphMenu')
+  graphMenu.innerHTML = ""
+  graphMenu.appendChild(algoLabel)
+  graphMenu.appendChild(selectAlgo)
+  graphMenu.appendChild(l)
+  graphMenu.appendChild(distanceLabel)
+  graphMenu.appendChild(selectDistance)
 
 
 }
@@ -265,9 +301,10 @@ function jsonToGraph(jsonFile) {
   labelsList.forEach((item) => {
     let li = document.createElement("li");
     ind++;
-    li.setAttribute('onclick', `console.log(${ind})`)
+    li.setAttribute('onclick', `console.log("${ind}", "${item}")`)
     li.innerText = item;
     list.appendChild(li);
+
   })
 
 
