@@ -49,8 +49,8 @@ def upload_file():
     print("res\n", df)
 
     # return {'nb_molecules': df.shape[0]}
-    df.to_csv("res.csv", index=False)
-    return send_file("res.csv")
+    df.to_csv("res2.csv", index=False)
+    return send_file("res2.csv")
 
 
 @app.route('/')
