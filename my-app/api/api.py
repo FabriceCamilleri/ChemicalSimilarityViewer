@@ -47,11 +47,11 @@ def upload_file():
         df, int(index), int(indexName), listAlgo, listDist)
 
     print("res\n", df)
-
-    # return {'nb_molecules': df.shape[0]}
-    # df.to_csv("res.csv", index=False)
-    pd.DataFrame.to_csv(df, "res.csv", index=False)
-    return send_file("res.csv")
+###########################################################
+    # !!!!! THIS IS THE PROBLEM !!!!!!!
+    pd.DataFrame.to_csv(df, "../../tmp/res.csv", index=False)
+    return send_file("../../tmp/res.csv")
+###########################################################
 
 
 @app.route('/')
