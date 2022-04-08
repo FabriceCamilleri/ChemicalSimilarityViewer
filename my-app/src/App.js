@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import Chart from 'chart.js/auto';
 import logo from './logo.svg';
 import './App.css';
+// import languageEncoding from 'detect-file-encoding-and-language'
 
 const ALLOWED_FILE = 'csv'
+const ALLOWED_ENCODINGS = ['UTF-8']
 
 var selected_column;
 var selected_columnName;
 var jsonResult;
 var myChart;
+const languageEncoding = require("detect-file-encoding-and-language");
 function App() {
   const [selectedFile, setSelectedFile] = useState();
   const [disable, setDisable] = useState(true);
@@ -17,7 +20,7 @@ function App() {
 
   const changeHandler = (event) => {
     var filename = document.getElementById('chooseFile').value;
-    // var filename = event.target.files[0].name;
+    var fileSub = event.target.files[0];
 
     let fileUp = document.getElementsByClassName('file-upload')[0]
     let noFile = document.getElementById('noFile')
@@ -33,10 +36,10 @@ function App() {
       noFile.innerHTML = filena.length > 28 ? filena.substring(0, 25) + '...' : filena;
     }
 
-    if (!event.target.files[0]) {
+    if (!fileSub) {
       return
     }
-    if (event.target.files[0].name.split('.')[1] != ALLOWED_FILE) {
+    if (fileSub.name.split('.')[1] != ALLOWED_FILE) {
 
       fileUp.classList.remove('active');
       fileUp.classList.add('wrong');
@@ -45,25 +48,37 @@ function App() {
       return;
     }
 
-    setSelectedFile(event.target.files[0]);
-    setDisable(true)
+    languageEncoding(fileSub).then((fileInfo) => {
+      console.log(fileInfo)
+      if (!ALLOWED_ENCODINGS.includes(fileInfo.encoding)) {
+        fileUp.classList.remove('active');
+        fileUp.classList.add('wrong');
+        document.getElementById("graphMenu").innerHTML = "";
+        document.getElementById("chartDiv").innerHTML = "The file encoding: " + fileInfo.encoding + " is not correct, please submit an UTF-8-encoded file";
+        return;
+      }
+      else {
+        setSelectedFile(fileSub);
+        setDisable(true)
 
-    let text = document.createElement("p")
-    text.innerHTML = "Select the column containing SMILES code"
-    text.setAttribute("id", "selectionText");
-    let strong = document.createElement("strong")
-    let p = document.createElement("p")
-    strong.appendChild(text)
-    p.appendChild(strong)
-    let reader = new FileReader();
-    reader.readAsText(event.target.files[0]);
-    reader.onload = function () {
-      document.getElementById("graphMenu").innerHTML = "";
-      document.getElementById("chartDiv").innerHTML = "";
-      document.getElementById("chartDiv").appendChild(p);
-      document.getElementById("chartDiv").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
-      select_column(setDisable)
-    }
+        let text = document.createElement("p")
+        text.innerHTML = "Select the column containing SMILES code"
+        text.setAttribute("id", "selectionText");
+        let strong = document.createElement("strong")
+        let p = document.createElement("p")
+        strong.appendChild(text)
+        p.appendChild(strong)
+        let reader = new FileReader();
+        reader.readAsText(fileSub);
+        reader.onload = function () {
+          document.getElementById("graphMenu").innerHTML = "";
+          document.getElementById("chartDiv").innerHTML = "";
+          document.getElementById("chartDiv").appendChild(p);
+          document.getElementById("chartDiv").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
+          select_column(setDisable)
+        }
+      }
+    });
   };
 
   //  The user sends the request by clicking on the submit button //
