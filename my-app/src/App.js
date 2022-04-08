@@ -1,14 +1,27 @@
 import React, { useState, useEffect } from 'react';
 import Chart from 'chart.js/auto';
-import logo from './logo.svg';
+// import * as XLSX from 'xlsx.js';
+// import * as JSON from 'jszip.js';
+// import 'jquery.min.js'
+// import logo from './logo.svg';
 import './App.css';
 
-const ALLOWED_FILE = 'csv'
+const ALLOWED_FILES = ['csv', 'xlsx', 'xls']
 
 var selected_column;
 var selected_columnName;
 var jsonResult;
 var myChart;
+
+class ExcelToJSON {
+  constructor() {
+    // this.setDisable = s
+
+    this.parseExcel = function (file) {
+
+    };
+  }
+}
 function App() {
   const [selectedFile, setSelectedFile] = useState();
   const [disable, setDisable] = useState(true);
@@ -34,7 +47,7 @@ function App() {
     if (!event.target.files[0]) {
       return
     }
-    if (event.target.files[0].name.split('.')[1] != ALLOWED_FILE) {
+    if (!ALLOWED_FILES.includes(event.target.files[0].name.split('.')[1])) {
 
       fileUp.classList.remove('active');
       fileUp.classList.add('wrong');
@@ -46,6 +59,8 @@ function App() {
     setSelectedFile(event.target.files[0]);
     setDisable(true)
 
+
+
     let text = document.createElement("p")
     text.innerHTML = "Select the column containing SMILES code"
     text.setAttribute("id", "selectionText");
@@ -53,21 +68,66 @@ function App() {
     let p = document.createElement("p")
     strong.appendChild(text)
     p.appendChild(strong)
+
+
     let reader = new FileReader();
-    reader.readAsText(event.target.files[0]);
-    reader.onload = function () {
-      document.getElementById("graphMenu").innerHTML = "";
-      document.getElementById("chartDiv").innerHTML = "";
-      document.getElementById("chartDiv").appendChild(p);
-      document.getElementById("chartDiv").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
-      select_column(setDisable)
+
+
+
+    //--- xlsx
+    if (event.target.files[0].name.split('.')[1] == 'xlsx') {
+      reader.onload = function (e) {
+        var data = e.target.result;
+        var XLSX = require("xlsx");
+        var workbook = XLSX.read(data, {
+          type: 'binary'
+        });
+
+        workbook.SheetNames.forEach((sheetName) => {
+          var XLSX = require("xlsx");
+          let json_object = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+          document.getElementById("graphMenu").innerHTML = "";
+          document.getElementById("chartDiv").innerHTML = "";
+          document.getElementById("chartDiv").appendChild(p);
+          document.getElementById("chartDiv").appendChild(jsonToHTMLTable(json_object));
+          select_column(setDisable)
+        });
+
+      };
+
+      reader.onerror = function (ex) {
+        console.log("erreur = ", ex);
+      };
+
+      reader.readAsBinaryString(event.target.files[0]);
+
     }
+
+    //--- csv
+    else {
+      reader.readAsText(event.target.files[0]);
+      reader.onload = function () {
+        document.getElementById("graphMenu").innerHTML = "";
+        document.getElementById("chartDiv").innerHTML = "";
+        document.getElementById("chartDiv").appendChild(p);
+        document.getElementById("chartDiv").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
+        select_column(setDisable)
+      }
+    }
+
+
   };
 
   const handleSubmission = () => {
-    if (!selectedFile || selectedFile.name.split('.')[1] != ALLOWED_FILE) return
+    if (!selectedFile || !ALLOWED_FILES.includes(selectedFile.name.split('.')[1])) return
 
     const formData = new FormData();
+    if (selectedFile.name.split('.')[1] == 'xlsx') {
+      var xl2json = new ExcelToJSON();
+      console.log("test1");
+      xl2json.parseExcel(selectedFile);
+
+    }
     formData.append('File', selectedFile);
     // var url = new URL("/file")
     // var params = { index: selected_column }
@@ -406,7 +466,7 @@ function select_columnName(setDisable) {
   for (var i = 0; i < cells.length; i++) {
     var cell = cells[i];
 
-    cell.onclick = function () {
+    cell.onclick = () => {
       clickEventName(this)
       setDisable(false)
     }
