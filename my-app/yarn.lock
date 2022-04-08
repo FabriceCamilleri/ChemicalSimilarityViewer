@@ -3447,6 +3447,11 @@
   "resolved" "https://registry.npmjs.org/dedent/-/dedent-0.7.0.tgz"
   "version" "0.7.0"
 
+"deeks@2.5.1":
+  "integrity" "sha512-fqrBeUz7f1UqaXDRzVB5RG2EfPk15HJRrb2pMZj8mLlSTtz4tRPsK5leFOskoHFPuyZ6+7aRM9j657fvXLkJ7Q=="
+  "resolved" "https://registry.npmjs.org/deeks/-/deeks-2.5.1.tgz"
+  "version" "2.5.1"
+
 "deep-equal@^1.0.1":
   "integrity" "sha512-yd9c5AdiqVcR+JjcwUQb9DkhJc8ngNr0MahEBGvDiJw8puWab2yZlh+nkasOnZP+EGTAP6rRp2JzJhJZzvNF8g=="
   "resolved" "https://registry.npmjs.org/deep-equal/-/deep-equal-1.1.1.tgz"
@@ -3590,6 +3595,11 @@
   "version" "2.0.2"
   dependencies:
     "buffer-indexof" "^1.0.0"
+
+"doc-path@3.0.2":
+  "integrity" "sha512-VRlA2OKSjTbHWj6wmSanxJ338fE/YN8pqmZ0FIWK5JWkIJMFRc4KmD35JtOrnjvVG0WrzOtDDNHx1lN1tkb+lA=="
+  "resolved" "https://registry.npmjs.org/doc-path/-/doc-path-3.0.2.tgz"
+  "version" "3.0.2"
 
 "doctrine@^2.1.0":
   "integrity" "sha512-35mSku4ZXK0vfCuHEDAwt55dg2jNajHZ1odvF+8SSr82EsZY4QmXfuWso8oEd8zRhVObSN18aM0CjSdoBX7zIw=="
@@ -5643,6 +5653,14 @@
   "integrity" "sha1-597mbjXW/Bb3EP6R1c9p9w8IkR0="
   "resolved" "https://registry.npmjs.org/jsesc/-/jsesc-0.5.0.tgz"
   "version" "0.5.0"
+
+"json-2-csv@^3.17.0":
+  "integrity" "sha512-mLnrYK3TX/mDSiBduA6vuSuVlvkYgDMv+Ef8HXCriyz73BBc6I7pWljdRfR+FKPzYKcnz/rUvzbqJQx/tbEoMQ=="
+  "resolved" "https://registry.npmjs.org/json-2-csv/-/json-2-csv-3.17.0.tgz"
+  "version" "3.17.0"
+  dependencies:
+    "deeks" "2.5.1"
+    "doc-path" "3.0.2"
 
 "json-parse-better-errors@^1.0.2":
   "integrity" "sha512-mrqyZKfX5EhL7hvqcV6WG1yYjnjeuYDzDhhcAAUrq8Po85NBQBJP+ZDUT75qZQ98IkUoBqdkExkukOU7Ts2wrw=="

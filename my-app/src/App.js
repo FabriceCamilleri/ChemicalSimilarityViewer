@@ -68,14 +68,16 @@ function App() {
 
     //--- xlsx
     if (event.target.files[0].name.split('.')[1] == 'xlsx') {
+      console.log("testbeforeOnload")
       reader.onload = function (e) {
         var data = e.target.result;
         var XLSX = require("xlsx");
         var workbook = XLSX.read(data, {
           type: 'binary'
         });
-
+        console.log("testbeforeLoop")
         workbook.SheetNames.forEach((sheetName) => {
+          console.log("test")
           var XLSX = require("xlsx");
           let json_object = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
           document.getElementById("graphMenu").innerHTML = "";
@@ -83,6 +85,21 @@ function App() {
           document.getElementById("chartDiv").appendChild(p);
           document.getElementById("chartDiv").appendChild(jsonToHTMLTable(json_object));
           select_column(setDisable)
+          let converter = require('json-2-csv');
+          converter.json2csv(json_object, (err, csv) => {
+            // console.log(csv);
+            const parts = [
+              new Blob(["\ufeff", csv])
+            ];
+            const csvFile = new File(parts, 'result.csv', {
+              lastModified: Date.now(),
+              type: "text/csv"
+            });
+            csvFile.text().then((res) => {
+              console.log("content=", res)
+            })
+            setSelectedFile(csvFile);
+          })
         });
 
       };
@@ -112,15 +129,29 @@ function App() {
 
   const handleSubmission = () => {
     if (!selectedFile || !ALLOWED_FILES.includes(selectedFile.name.split('.')[1])) return
-
+    console.log(selectedFile);
     const formData = new FormData();
     if (selectedFile.name.split('.')[1] == 'xlsx') {
-      // var xl2json = new ExcelToJSON();
-      // console.log("test1");
-      // xl2json.parseExcel(selectedFile);
+      // console.log(csvFile);
+      // const parts = [
+      //   new Blob(['you construct a file...'], csvFile),
+      //   ' Same way as you do with blob',
+      //   new Uint16Array([33])
+      // ];
+      // const csvFile = new File(parts, 'result.csv', {
+      //   lastModified: new Date(2020, 1, 1)
+      // });
+      // formData.append('File', csvFile);
+      // // var xl2json = new ExcelToJSON();
+      // // console.log("test1");
+      // // xl2json.parseExcel(selectedFile);
 
+      formData.append('File', selectedFile);
+
+    } else {
+
+      formData.append('File', selectedFile);
     }
-    formData.append('File', selectedFile);
     // var url = new URL("/file")
     // var params = { index: selected_column }
     // url.search = new URLSearchParams(params).toString();

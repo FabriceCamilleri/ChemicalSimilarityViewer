@@ -29,10 +29,13 @@ def allowed_file(filename):
 @app.route('/file', methods=['POST'])
 def upload_file():
     if 'File' not in request.files:
+        print("if1")
         return {'nb_molecules': -1}
 
     file = request.files['File']
+    print(file.filename)
     if file.filename == '' or file and not allowed_file(file.filename):
+        print("if2")
         return {'nb_molecules': -1}
 
     index = request.args.get('index')
@@ -41,8 +44,9 @@ def upload_file():
     listDist = [int(request.args.get('d1')), int(
         request.args.get('d2')), int(request.args.get('d3'))]
     # "[true, false]
-
+    print("file=", file)
     df = pd.read_csv(request.files['File'], sep=";|,", header=None)
+    print("df=", df)
     df = chemspace.createChemicalSpace(
         df, int(index), int(indexName), listAlgo, listDist)
 
