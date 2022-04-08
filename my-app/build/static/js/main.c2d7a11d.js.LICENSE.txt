@@ -11,6 +11,16 @@ object-assign
  * Released under the MIT License
  */
 
+/*! sheetjs (C) 2013-present SheetJS -- http://sheetjs.com */
+
+/*! xlsx.js (C) 2013-present SheetJS -- http://sheetjs.com */
+
+/**
+ * @license MIT
+ * doc-path <https://github.com/mrodrig/doc-path>
+ * Copyright (c) 2015-present, Michael Rodrigues.
+ */
+
 /** @license React v0.20.2
  * scheduler.production.min.js
  *
