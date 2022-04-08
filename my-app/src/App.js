@@ -13,6 +13,8 @@ function App() {
   const [selectedFile, setSelectedFile] = useState();
   const [disable, setDisable] = useState(true);
 
+  //  The user uploads a file //
+
   const changeHandler = (event) => {
     var filename = document.getElementById('chooseFile').value;
     // var filename = event.target.files[0].name;
@@ -63,6 +65,8 @@ function App() {
       select_column(setDisable)
     }
   };
+
+  //  The user sends the request by clicking on the submit button //
 
   const handleSubmission = () => {
     if (!selectedFile || selectedFile.name.split('.')[1] != ALLOWED_FILE) return
@@ -199,6 +203,8 @@ function createMenu(checkList) {
 
 }
 
+//  Takes a JSON and build a Chartjs graph  //
+
 function jsonToGraph(jsonFile) {
   jsonResult = jsonFile;
 
@@ -309,6 +315,7 @@ function jsonToGraph(jsonFile) {
   );
 }
 
+//  Transforms a csv file to Json //
 
 function csvToJson(csv) {
   const lines = csv.split(/\r\n|\r|\n/)
@@ -329,6 +336,8 @@ function csvToJson(csv) {
   }
   return result
 }
+
+//  Transforms a JSON file to an HTML table //
 
 function jsonToHTMLTable(json) {
   var col = [];
@@ -376,6 +385,8 @@ function jsonToHTMLTable(json) {
 
 export default App;
 
+//  The user can select the clumn containing the molecules' SMILE after uploading a file  //
+
 function select_column(setDisable) {
   var table = document.getElementById("sentCSV");
   var cells = table.getElementsByTagName("td");
@@ -400,6 +411,8 @@ function select_column(setDisable) {
 
 }
 
+//  The user can select the clumn containing the molecules' name after selecting the column with the SMILE  //
+
 function select_columnName(setDisable) {
   var table = document.getElementById("sentCSV");
   var cells = table.getElementsByTagName("td");
@@ -413,6 +426,8 @@ function select_columnName(setDisable) {
   }
 
 }
+
+//  HTML table for column selections interacts with user's input  //
 
 function mouseEvent(cell, isEntering) {
   const parentTds = cell.parentElement.children;
@@ -439,6 +454,8 @@ function clickEventName(cell) {
   document.querySelectorAll('.selectedName').forEach(col => col.classList.remove('selectedName'));
   columns.forEach(col => { col.classList.add('selectedName'); });
 }
+
+//  Utilititary function to add a parameter in the uri  //
 
 function updateQueryStringParameter(uri, key, value) {
   var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
