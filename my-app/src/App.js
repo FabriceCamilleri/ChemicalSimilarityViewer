@@ -68,26 +68,20 @@ function App() {
 
     //--- xlsx
     if (event.target.files[0].name.split('.')[1] == 'xlsx') {
-      console.log("testbeforeOnload")
       reader.onload = function (e) {
         var data = e.target.result;
         var XLSX = require("xlsx");
         var workbook = XLSX.read(data, {
           type: 'binary'
         });
-        console.log("testbeforeLoop")
         workbook.SheetNames.forEach((sheetName) => {
-          console.log("test")
           var XLSX = require("xlsx");
           let json_object = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
-          document.getElementById("graphMenu").innerHTML = "";
-          document.getElementById("chartDiv").innerHTML = "";
-          document.getElementById("chartDiv").appendChild(p);
+          clear(p)
           document.getElementById("chartDiv").appendChild(jsonToHTMLTable(json_object));
           select_column(setDisable)
           let converter = require('json-2-csv');
           converter.json2csv(json_object, (err, csv) => {
-            // console.log(csv);
             const parts = [
               new Blob(["\ufeff", csv])
             ];
@@ -95,9 +89,6 @@ function App() {
               lastModified: Date.now(),
               type: "text/csv"
             });
-            csvFile.text().then((res) => {
-              console.log("content=", res)
-            })
             setSelectedFile(csvFile);
           })
         });
@@ -111,14 +102,11 @@ function App() {
       reader.readAsBinaryString(event.target.files[0]);
 
     }
-
     //--- csv
     else {
       reader.readAsText(event.target.files[0]);
       reader.onload = function () {
-        document.getElementById("graphMenu").innerHTML = "";
-        document.getElementById("chartDiv").innerHTML = "";
-        document.getElementById("chartDiv").appendChild(p);
+        clear(p)
         document.getElementById("chartDiv").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
         select_column(setDisable)
       }
@@ -129,7 +117,6 @@ function App() {
 
   const handleSubmission = () => {
     if (!selectedFile || !ALLOWED_FILES.includes(selectedFile.name.split('.')[1])) return
-    console.log(selectedFile);
     const formData = new FormData();
     if (selectedFile.name.split('.')[1] == 'xlsx') {
       // console.log(csvFile);
@@ -459,6 +446,13 @@ function jsonToHTMLTable(json) {
 
 export default App;
 
+
+function clear(p) {
+  document.getElementById("graphMenu").innerHTML = "";
+  document.getElementById("chartDiv").innerHTML = "";
+  document.getElementById("chartDiv").appendChild(p);
+}
+
 function select_column(setDisable) {
   var table = document.getElementById("sentCSV");
   var cells = table.getElementsByTagName("td");
@@ -515,7 +509,6 @@ function clickEvent(cell) {
 }
 
 function clickEventName(cell) {
-  console.log(cell)
   const parentTds = cell.parentElement.children;
   const clickedTdIndex = [...parentTds].findIndex(td => td == cell);
   selected_columnName = clickedTdIndex;
