@@ -161,9 +161,18 @@
     <div class="scrollbar-primary"
       style="overflow-y: auto; height:400px; flex:2; border: solid; height: 100%; border-radius: 20px; border-color: #0d6efdaa; padding: 20px">
       <h4 style="text-align: center;">Molecules</h4>
-      <hr />
-      <ul id="moleculesList">
-      </ul>
+      <div style="display: none;" id="noSmileDiv">
+        <hr />
+        <p><b>Incorrect SMILEs</b></p>
+        <ul id="noSmileList">
+        </ul>
+      </div>
+      <div>
+        <hr />
+        <p id="validSmilesTitle" style="display: none"><b>Valid SMILEs</b></p>
+        <ul id="moleculesList">
+        </ul>
+      </div>
     </div>
   </div>
   <script>

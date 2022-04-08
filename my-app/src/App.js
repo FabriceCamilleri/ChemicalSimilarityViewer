@@ -5,7 +5,6 @@ import Chart from 'chart.js/auto';
 // import 'jquery.min.js'
 // import logo from './logo.svg';
 import './App.css';
-// import languageEncoding from 'detect-file-encoding-and-language'
 
 const ALLOWED_ENCODINGS = ['UTF-8']
 const ALLOWED_FILES = ['csv', 'xlsx', 'xls']
@@ -382,12 +381,18 @@ function jsonToGraph(jsonFile) {
 
   var dataDict = []
   var labelsList = []
+  var labelIncorrectSmileList = []
   let algo = document.getElementById("algoGr").value
   let distance = document.getElementById("distGr").value
 
   for (var i = 0; i < jsonFile.length; i++) {
-    dataDict.push({ x: parseFloat(jsonFile[i][`X_${algo}_${distance}`]), y: parseFloat(jsonFile[i][`Y_${algo}_${distance}`]) });
-    labelsList.push(jsonFile[i]["names"])
+    console.log(jsonFile[i]["names"]);
+    console.log(jsonFile[i][`X_${algo}_${distance}`]);
+    if (jsonFile[i][`X_${algo}_${distance}`] != "") {
+      dataDict.push({ x: parseFloat(jsonFile[i][`X_${algo}_${distance}`]), y: parseFloat(jsonFile[i][`Y_${algo}_${distance}`]) });
+      labelsList.push(jsonFile[i]["names"])
+    }
+    else labelIncorrectSmileList.push(jsonFile[i]["names"])
   }
 
   const colors = [
@@ -414,15 +419,6 @@ function jsonToGraph(jsonFile) {
         legend: {
           display: false
         },
-        // title: {
-        //   display: true,
-        //   text: `${algo} - ${distance}`,
-        //   font: {
-        //     size: 18,
-        //     weight: 'bold',
-        //     lineHeight: 1.2,
-        //   },
-        // },
         tooltip: {
           callbacks: {
             label: function (ctx) {
@@ -468,8 +464,12 @@ function jsonToGraph(jsonFile) {
       }
     }
   };
+
+  //display the list of molecules
   let ind = 0;
   let list = document.getElementById("moleculesList");
+  let listTitle = document.getElementById("validSmilesTitle");
+  listTitle.style.display = "block";
   list.innerHTML = ""
   labelsList.forEach((item) => {
     let li = document.createElement("li");
@@ -477,7 +477,22 @@ function jsonToGraph(jsonFile) {
     li.setAttribute('onclick', `console.log("${ind}", "${item}")`)
     li.innerText = item;
     list.appendChild(li);
+  })
 
+  ind = 0;
+  let divNoSmile = document.getElementById("noSmileDiv");
+  list = document.getElementById("noSmileList");
+  list.innerHTML = ""
+  if (labelIncorrectSmileList.length == 0) { divNoSmile.style.display = "none" }
+  else { divNoSmile.style.display = "block" }
+
+  labelIncorrectSmileList.forEach((item) => {
+    let li = document.createElement("li");
+    ind++;
+    li.setAttribute('onclick', `console.log("${ind}", "${item}")`)
+    li.innerText = item;
+    li.style.color = "red"
+    list.appendChild(li);
   })
 
 
