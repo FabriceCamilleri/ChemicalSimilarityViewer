@@ -48,7 +48,7 @@ function App() {
       fileUp.classList.remove('active');
       fileUp.classList.add('wrong');
       document.getElementById("graphMenu").innerHTML = "";
-      document.getElementById("chartDiv").innerHTML = "The file extension is not correct, please submit a .csv file";
+      document.getElementById("chartDiv").innerHTML = "The file extension is not correct, please submit a .csv or a .xlsx file";
       return;
     }
 
