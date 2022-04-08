@@ -1,17 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import Chart from 'chart.js/auto';
-import logo from './logo.svg';
+// import * as XLSX from 'xlsx.js';
+// import * as JSON from 'jszip.js';
+// import 'jquery.min.js'
+// import logo from './logo.svg';
 import './App.css';
 // import languageEncoding from 'detect-file-encoding-and-language'
 
-const ALLOWED_FILE = 'csv'
 const ALLOWED_ENCODINGS = ['UTF-8']
+const ALLOWED_FILES = ['csv', 'xlsx', 'xls']
 
 var selected_column;
 var selected_columnName;
 var jsonResult;
 var myChart;
 const languageEncoding = require("detect-file-encoding-and-language");
+
+
 function App() {
   const [selectedFile, setSelectedFile] = useState();
   const [disable, setDisable] = useState(true);
@@ -39,7 +44,7 @@ function App() {
     if (!fileSub) {
       return
     }
-    if (fileSub.name.split('.')[1] != ALLOWED_FILE) {
+    if (!ALLOWED_FILES.includes(event.target.files[0].name.split('.')[1])) {
 
       fileUp.classList.remove('active');
       fileUp.classList.add('wrong');
@@ -58,8 +63,10 @@ function App() {
         return;
       }
       else {
-        setSelectedFile(fileSub);
+        setSelectedFile(event.target.files[0]);
         setDisable(true)
+
+
 
         let text = document.createElement("p")
         text.innerHTML = "Select the column containing SMILES code"
@@ -68,26 +75,176 @@ function App() {
         let p = document.createElement("p")
         strong.appendChild(text)
         p.appendChild(strong)
+
+
         let reader = new FileReader();
-        reader.readAsText(fileSub);
-        reader.onload = function () {
-          document.getElementById("graphMenu").innerHTML = "";
-          document.getElementById("chartDiv").innerHTML = "";
-          document.getElementById("chartDiv").appendChild(p);
-          document.getElementById("chartDiv").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
-          select_column(setDisable)
+
+
+        //--- xlsx
+        if (event.target.files[0].name.split('.')[1] == 'xlsx') {
+          console.log("testbeforeOnload")
+          reader.onload = function (e) {
+            var data = e.target.result;
+            var XLSX = require("xlsx");
+            var workbook = XLSX.read(data, {
+              type: 'binary'
+            });
+            console.log("testbeforeLoop")
+            workbook.SheetNames.forEach((sheetName) => {
+              console.log("test")
+              var XLSX = require("xlsx");
+              let json_object = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+              document.getElementById("graphMenu").innerHTML = "";
+              document.getElementById("chartDiv").innerHTML = "";
+              document.getElementById("chartDiv").appendChild(p);
+              document.getElementById("chartDiv").appendChild(jsonToHTMLTable(json_object));
+              select_column(setDisable)
+              let converter = require('json-2-csv');
+              converter.json2csv(json_object, (err, csv) => {
+                // console.log(csv);
+                const parts = [
+                  new Blob(["\ufeff", csv])
+                ];
+                const csvFile = new File(parts, 'result.csv', {
+                  lastModified: Date.now(),
+                  type: "text/csv"
+                });
+                csvFile.text().then((res) => {
+                  console.log("content=", res)
+                })
+                setSelectedFile(csvFile);
+              })
+            });
+
+          };
+
+          reader.onerror = function (ex) {
+            console.log("erreur = ", ex);
+          };
+
+          reader.readAsBinaryString(event.target.files[0]);
+
+        }
+
+        //--- csv
+        else {
+          reader.readAsText(event.target.files[0]);
+          reader.onload = function () {
+            document.getElementById("graphMenu").innerHTML = "";
+            document.getElementById("chartDiv").innerHTML = "";
+            document.getElementById("chartDiv").appendChild(p);
+            document.getElementById("chartDiv").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
+            select_column(setDisable)
+          }
         }
       }
-    });
+    })
+    // setSelectedFile(event.target.files[0]);
+    // setDisable(true)
+
+
+
+    // let text = document.createElement("p")
+    // text.innerHTML = "Select the column containing SMILES code"
+    // text.setAttribute("id", "selectionText");
+    // let strong = document.createElement("strong")
+    // let p = document.createElement("p")
+    // strong.appendChild(text)
+    // p.appendChild(strong)
+
+
+    // let reader = new FileReader();
+
+
+
+    // //--- xlsx
+    // if (event.target.files[0].name.split('.')[1] == 'xlsx') {
+    //   console.log("testbeforeOnload")
+    //   reader.onload = function (e) {
+    //     var data = e.target.result;
+    //     var XLSX = require("xlsx");
+    //     var workbook = XLSX.read(data, {
+    //       type: 'binary'
+    //     });
+    //     console.log("testbeforeLoop")
+    //     workbook.SheetNames.forEach((sheetName) => {
+    //       console.log("test")
+    //       var XLSX = require("xlsx");
+    //       let json_object = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+    //       document.getElementById("graphMenu").innerHTML = "";
+    //       document.getElementById("chartDiv").innerHTML = "";
+    //       document.getElementById("chartDiv").appendChild(p);
+    //       document.getElementById("chartDiv").appendChild(jsonToHTMLTable(json_object));
+    //       select_column(setDisable)
+    //       let converter = require('json-2-csv');
+    //       converter.json2csv(json_object, (err, csv) => {
+    //         // console.log(csv);
+    //         const parts = [
+    //           new Blob(["\ufeff", csv])
+    //         ];
+    //         const csvFile = new File(parts, 'result.csv', {
+    //           lastModified: Date.now(),
+    //           type: "text/csv"
+    //         });
+    //         csvFile.text().then((res) => {
+    //           console.log("content=", res)
+    //         })
+    //         setSelectedFile(csvFile);
+    //       })
+    //     });
+
+    //   };
+
+    //   reader.onerror = function (ex) {
+    //     console.log("erreur = ", ex);
+    //   };
+
+    //   reader.readAsBinaryString(event.target.files[0]);
+
+    // }
+
+    // //--- csv
+    // else {
+    //   reader.readAsText(event.target.files[0]);
+    //   reader.onload = function () {
+    //     document.getElementById("graphMenu").innerHTML = "";
+    //     document.getElementById("chartDiv").innerHTML = "";
+    //     document.getElementById("chartDiv").appendChild(p);
+    //     document.getElementById("chartDiv").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
+    //     select_column(setDisable)
+    //   }
+    // }
+
+
   };
 
   //  The user sends the request by clicking on the submit button //
 
   const handleSubmission = () => {
-    if (!selectedFile || selectedFile.name.split('.')[1] != ALLOWED_FILE) return
-
+    if (!selectedFile || !ALLOWED_FILES.includes(selectedFile.name.split('.')[1])) return
+    console.log(selectedFile);
     const formData = new FormData();
-    formData.append('File', selectedFile);
+    if (selectedFile.name.split('.')[1] == 'xlsx') {
+      // console.log(csvFile);
+      // const parts = [
+      //   new Blob(['you construct a file...'], csvFile),
+      //   ' Same way as you do with blob',
+      //   new Uint16Array([33])
+      // ];
+      // const csvFile = new File(parts, 'result.csv', {
+      //   lastModified: new Date(2020, 1, 1)
+      // });
+      // formData.append('File', csvFile);
+      // // var xl2json = new ExcelToJSON();
+      // // console.log("test1");
+      // // xl2json.parseExcel(selectedFile);
+
+      formData.append('File', selectedFile);
+
+    } else {
+
+      formData.append('File', selectedFile);
+    }
     // var url = new URL("/file")
     // var params = { index: selected_column }
     // url.search = new URLSearchParams(params).toString();
@@ -462,6 +619,7 @@ function clickEvent(cell) {
 }
 
 function clickEventName(cell) {
+  console.log(cell)
   const parentTds = cell.parentElement.children;
   const clickedTdIndex = [...parentTds].findIndex(td => td == cell);
   selected_columnName = clickedTdIndex;
