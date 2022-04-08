@@ -13,15 +13,7 @@ var selected_columnName;
 var jsonResult;
 var myChart;
 
-class ExcelToJSON {
-  constructor() {
-    // this.setDisable = s
 
-    this.parseExcel = function (file) {
-
-    };
-  }
-}
 function App() {
   const [selectedFile, setSelectedFile] = useState();
   const [disable, setDisable] = useState(true);
@@ -123,9 +115,9 @@ function App() {
 
     const formData = new FormData();
     if (selectedFile.name.split('.')[1] == 'xlsx') {
-      var xl2json = new ExcelToJSON();
-      console.log("test1");
-      xl2json.parseExcel(selectedFile);
+      // var xl2json = new ExcelToJSON();
+      // console.log("test1");
+      // xl2json.parseExcel(selectedFile);
 
     }
     formData.append('File', selectedFile);
@@ -466,7 +458,7 @@ function select_columnName(setDisable) {
   for (var i = 0; i < cells.length; i++) {
     var cell = cells[i];
 
-    cell.onclick = () => {
+    cell.onclick = function () {
       clickEventName(this)
       setDisable(false)
     }
@@ -492,6 +484,7 @@ function clickEvent(cell) {
 }
 
 function clickEventName(cell) {
+  console.log(cell)
   const parentTds = cell.parentElement.children;
   const clickedTdIndex = [...parentTds].findIndex(td => td == cell);
   selected_columnName = clickedTdIndex;
