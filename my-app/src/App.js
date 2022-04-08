@@ -55,7 +55,7 @@ function App() {
 
     languageEncoding(fileSub).then((fileInfo) => {
       console.log(fileInfo)
-      if (!ALLOWED_ENCODINGS.includes(fileInfo.encoding)) {
+      if (!ALLOWED_ENCODINGS.includes(fileInfo.encoding) && fileSub.name.split('.')[1] == "csv") {
         fileUp.classList.remove('active');
         fileUp.classList.add('wrong');
         document.getElementById("graphMenu").innerHTML = "";
