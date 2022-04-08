@@ -6,6 +6,7 @@ from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import pandas as pd
 import chemspace
+import io
 
 
 UPLOAD_FOLDER = '/path/to/the/uploads'
@@ -53,8 +54,10 @@ def upload_file():
     print("res\n", df)
 
     # return {'nb_molecules': df.shape[0]}
-    df.to_csv("res.csv", index=False)
-    return send_file("res.csv")
+    buffer = io.BytesIO()
+    df.to_csv(buffer, index=False, sep=";")
+    buffer.seek(0)
+    return send_file(buffer, mimetype="text/csv")
 
 # @app.route('/')
 # def serve():
