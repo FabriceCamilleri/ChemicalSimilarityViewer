@@ -6,6 +6,7 @@ from flask import Flask, flash, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import pandas as pd
 import chemspace
+import io
 
 
 UPLOAD_FOLDER = '/path/to/the/uploads'
@@ -29,10 +30,13 @@ def allowed_file(filename):
 @app.route('/file', methods=['POST'])
 def upload_file():
     if 'File' not in request.files:
+        print("if1")
         return {'nb_molecules': -1}
 
     file = request.files['File']
+    print(file.filename)
     if file.filename == '' or file and not allowed_file(file.filename):
+        print("if2")
         return {'nb_molecules': -1}
 
     index = request.args.get('index')
@@ -41,17 +45,24 @@ def upload_file():
     listDist = [int(request.args.get('d1')), int(
         request.args.get('d2')), int(request.args.get('d3'))]
     # "[true, false]
-
+    print("file=", file)
     df = pd.read_csv(request.files['File'], sep=";|,", header=None)
+    print("df=", df)
     df = chemspace.createChemicalSpace(
         df, int(index), int(indexName), listAlgo, listDist)
 
     print("res\n", df)
 ###########################################################
     # !!!!! THIS IS THE PROBLEM !!!!!!!
-    pd.DataFrame.to_csv(df, "../../tmp/res.csv", index=False)
-    return send_file("../../tmp/res.csv")
+    # pd.DataFrame.to_csv(df, "../../tmp/res.csv", index=False)
+    # return send_file("../../tmp/res.csv")
 ###########################################################
+
+    # return {'nb_molecules': df.shape[0]}
+    buffer = io.BytesIO()
+    df.to_csv(buffer, index=False, sep=";")
+    buffer.seek(0)
+    return send_file(buffer, mimetype="text/csv")
 
 
 @app.route('/')

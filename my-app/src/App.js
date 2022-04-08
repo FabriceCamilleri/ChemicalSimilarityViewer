@@ -1,58 +1,141 @@
 import React, { useState, useEffect } from 'react';
 import Chart from 'chart.js/auto';
-import logo from './logo.svg';
+// import * as XLSX from 'xlsx.js';
+// import * as JSON from 'jszip.js';
+// import 'jquery.min.js'
+// import logo from './logo.svg';
 import './App.css';
 
-const ALLOWED_FILE = 'csv'
+const ALLOWED_ENCODINGS = ['UTF-8']
+const ALLOWED_FILES = ['csv', 'xlsx', 'xls']
 
 var selected_column;
 var selected_columnName;
 var jsonResult;
 var myChart;
+const languageEncoding = require("detect-file-encoding-and-language");
+
 
 function App() {
   const [selectedFile, setSelectedFile] = useState();
   const [disable, setDisable] = useState(true);
 
+  //  The user uploads a file //
+
   const changeHandler = (event) => {
-    if (!event.target.files[0] || event.target.files[0].name.split('.')[1] != ALLOWED_FILE) {
+    var filename = document.getElementById('chooseFile').value;
+    var fileSub = event.target.files[0];
+
+    let fileUp = document.getElementsByClassName('file-upload')[0]
+    let noFile = document.getElementById('noFile')
+    if (/^\s*$/.test(filename)) {
+      fileUp.classList.remove('active');
+      fileUp.classList.remove('wrong');
+      noFile.innerHTML = "No file chosen...";
+    }
+    else {
+      fileUp.classList.remove('wrong');
+      fileUp.classList.add('active');
+      let filena = filename.replace("C:\\fakepath\\", "")
+      noFile.innerHTML = filena.length > 28 ? filena.substring(0, 25) + '...' : filena;
+    }
+
+    if (!fileSub) {
+      return
+    }
+    if (!ALLOWED_FILES.includes(event.target.files[0].name.split('.')[1])) {
+
+      fileUp.classList.remove('active');
+      fileUp.classList.add('wrong');
       document.getElementById("graphMenu").innerHTML = "";
-      document.getElementById("chartDiv").innerHTML = "The file extension is not correct, please submit a .csv file";
+      document.getElementById("chartDiv").innerHTML = "The file extension is not correct, please submit a .csv or a .xlsx file";
       return;
     }
 
-    setSelectedFile(event.target.files[0]);
-    setDisable(true)
-    // let text = document.createTextNode("Select the column containing SMILES code")
-    let text = document.createElement("p")
-    text.innerHTML = "Select the column containing SMILES code"
-    text.setAttribute("id", "selectionText");
-    let strong = document.createElement("strong")
-    let p = document.createElement("p")
-    strong.appendChild(text)
-    p.appendChild(strong)
-    let reader = new FileReader();
-    reader.readAsText(event.target.files[0]);
-    reader.onload = function () {
-      document.getElementById("graphMenu").innerHTML = "";
-      document.getElementById("chartDiv").innerHTML = "";
-      document.getElementById("chartDiv").appendChild(p);
-      document.getElementById("chartDiv").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
-      select_column(setDisable)
-    }
+    languageEncoding(fileSub).then((fileInfo) => {
+      if (!ALLOWED_ENCODINGS.includes(fileInfo.encoding) && fileSub.name.split('.')[1] == "csv") {
+        fileUp.classList.remove('active');
+        fileUp.classList.add('wrong');
+        document.getElementById("graphMenu").innerHTML = "";
+        document.getElementById("chartDiv").innerHTML = "The file encoding: " + fileInfo.encoding + " is not correct, please submit an UTF-8-encoded file";
+        return;
+      }
+      else {
+        setSelectedFile(event.target.files[0]);
+        setDisable(true)
 
 
+
+        let text = document.createElement("p")
+        text.innerHTML = "Select the column containing SMILES code"
+        text.setAttribute("id", "selectionText");
+        let strong = document.createElement("strong")
+        let p = document.createElement("p")
+        strong.appendChild(text)
+        p.appendChild(strong)
+
+
+        let reader = new FileReader();
+
+
+        //--- xlsx
+        if (event.target.files[0].name.split('.')[1] == 'xlsx') {
+          reader.onload = function (e) {
+            var data = e.target.result;
+            var XLSX = require("xlsx");
+            var workbook = XLSX.read(data, {
+              type: 'binary'
+            });
+            workbook.SheetNames.forEach((sheetName) => {
+              var XLSX = require("xlsx");
+              let json_object = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+              clear(p)
+              document.getElementById("chartDiv").appendChild(jsonToHTMLTable(json_object));
+              select_column(setDisable)
+              let converter = require('json-2-csv');
+              converter.json2csv(json_object, (err, csv) => {
+                const parts = [
+                  new Blob(["\ufeff", csv])
+                ];
+                const csvFile = new File(parts, 'result.csv', {
+                  lastModified: Date.now(),
+                  type: "text/csv"
+                });
+                setSelectedFile(csvFile);
+              })
+            });
+
+          };
+
+          reader.onerror = function (ex) {
+            console.log("erreur = ", ex);
+          };
+
+          reader.readAsBinaryString(event.target.files[0]);
+
+        }
+
+        //--- csv
+        else {
+          reader.readAsText(event.target.files[0]);
+          reader.onload = function () {
+            clear(p)
+            document.getElementById("chartDiv").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
+            select_column(setDisable)
+          }
+        }
+      }
+    })
   };
 
-  const handleSubmission = () => {
-    if (!selectedFile || selectedFile.name.split('.')[1] != ALLOWED_FILE) return
+  //  The user sends the request by clicking on the submit button //
 
+  const handleSubmission = () => {
+    if (!selectedFile || !ALLOWED_FILES.includes(selectedFile.name.split('.')[1])) return
     const formData = new FormData();
+
     formData.append('File', selectedFile);
-    // var url = new URL("/file")
-    // var params = { index: selected_column }
-    // url.search = new URLSearchParams(params).toString();
-    // console.log(url)
+
     var url = updateQueryStringParameter("/file", "index", selected_column)
     url = updateQueryStringParameter(url, "nameIndex", selected_columnName)
     var algo1 = + document.getElementById("algo1").checked
@@ -81,16 +164,16 @@ function App() {
           let canvas = document.createElement("canvas");
           canvas.setAttribute("id", "myChart");
           divRes.appendChild(canvas);
-          // canvas.width = divRes.offsetWidth;
-          // canvas.height = divRes.offsetHeight;
-
-          // document.getElementById("name").appendChild(jsonToHTMLTable(csvToJson(res)));
-          // document.getElementById("name").appendChild(jsonToGraph(csvToJson(res)));
           jsonToGraph(csvToJson(res));
 
         });
         let href = window.URL.createObjectURL(res)
-        document.getElementById('download').innerHTML = `<hr/> <a class='btn btn-danger' role='button' href=${href} download='result.csv'>Download</a>`;
+        document.getElementById('dlButton').style.display = "block"
+        document.getElementById('dlButton').addEventListener('click', () => {
+          window.location.assign(href)
+        })
+
+        document.getElementById('dlLabel').style.display = "block"
 
       })
       .catch((error) => {
@@ -102,39 +185,17 @@ function App() {
     document.getElementById("chartDiv").appendChild(loader)
   };
 
+  document.getElementById('chooseFile').addEventListener('change', (e) => changeHandler(e))
+
   return (
-    <div>
-      <input className="form-control-file" type="file" name="file" onChange={changeHandler} />
-      <br />
-      <div>
-        <button id="submitButton" className="btn btn-primary" disabled={disable} onClick={handleSubmission}>Submit</button>
-      </div>
+    <div style={{ textAlign: "center" }}>
+      <button id="submitButton" className="btn btn-primary" disabled={disable} onClick={handleSubmission}>Submit</button>
     </div>
   )
 };
 
 
 function createMenu(checkList) {
-
-  // let comb = [['X_tsne_DiceDist', 'Y_tsne_DiceDist'], // 1, 0, 1, 0, 0 0
-  // ['X_tsne_CosDist', 'Y_tsne_CosDist'],//1, 0, 0, 1, 0 1
-  // ['X_tsne_TanimotoDist', 'Y_tsne_TanimotoDist'],//1, 0, 0, 0, 1
-  // ['X_umap_DiceDist', 'Y_umap_DiceDist'],// 0, 1, 1, 0, 0
-  // ['X_umap_CosDist', 'Y_umap_CosDist'],// 0, 1, 0, 1, 0
-  // ['X_umap_TanimotoDist', 'Y_umap_TanimotoDist']]// 0, 1, 0, 0, 1
-
-
-
-  //   <label for="algoGr">Choose algo:</label>
-
-  // <select name="algoGr" id="algoGr">
-  //     <option value="0">Dog</option>
-  //     <option value="1">Cat</option>
-  //     <option value="2">Hamster</option>
-  //     <option value="parrot">Parrot</option>
-  //     <option value="spider">Spider</option>
-  //     <option value="goldfish">Goldfish</option>
-  // </select>
   let selectAlgo = document.createElement('select')
   selectAlgo.setAttribute('name', 'algoGr')
   selectAlgo.setAttribute('id', 'algoGr')
@@ -143,9 +204,6 @@ function createMenu(checkList) {
     jsonToGraph(jsonResult);
   })
 
-  // selectAlgo.setAttribute('onChange', "jsonToGraph(jsonResult)")
-  // selectAlgo.onChange = function () { jsonToGraph(jsonResult); };
-
   let selectDistance = document.createElement('select')
   selectDistance.setAttribute('name', 'distGr')
   selectDistance.setAttribute('id', 'distGr')
@@ -153,9 +211,6 @@ function createMenu(checkList) {
     myChart.destroy();
     jsonToGraph(jsonResult);
   })
-  // selectDistance.setAttribute('onChange', "jsonToGraph(jsonResult)")
-
-  // selectDistance.onChange = function () { jsonToGraph(jsonResult); };
 
   let option1 = document.createElement('option')
   option1.setAttribute('value', 'tsne')
@@ -181,27 +236,44 @@ function createMenu(checkList) {
   if (checkList[3]) selectDistance.appendChild(option4)
   if (checkList[4]) selectDistance.appendChild(option5)
 
+  let algoLabel = document.createElement('label')
+  algoLabel.setAttribute('style', 'padding-right: 5px')
+  algoLabel.innerHTML = "Algorithm"
+  let l = document.createElement('label')
+  l.setAttribute('style', 'padding-left: 8px; padding-right: 8px')
+  l.innerHTML = "-"
+  let distanceLabel = document.createElement('label')
+  distanceLabel.setAttribute('style', 'padding-right: 5px')
+  distanceLabel.innerHTML = "Distance"
 
-  document.getElementById('graphMenu').innerHTML = ""
-  document.getElementById('graphMenu').appendChild(selectAlgo)
-  document.getElementById('graphMenu').appendChild(selectDistance)
+  let graphMenu = document.getElementById('graphMenu')
+  graphMenu.innerHTML = ""
+  graphMenu.appendChild(algoLabel)
+  graphMenu.appendChild(selectAlgo)
+  graphMenu.appendChild(l)
+  graphMenu.appendChild(distanceLabel)
+  graphMenu.appendChild(selectDistance)
 
 
 }
+
+//  Takes a JSON and build a Chartjs graph  //
 
 function jsonToGraph(jsonFile) {
   jsonResult = jsonFile;
 
   var dataDict = []
   var labelsList = []
+  var labelIncorrectSmileList = []
   let algo = document.getElementById("algoGr").value
   let distance = document.getElementById("distGr").value
 
-  console.log(`X_${algo}_${distance}`);
-  console.log(jsonFile);
   for (var i = 0; i < jsonFile.length; i++) {
-    dataDict.push({ x: parseFloat(jsonFile[i][`X_${algo}_${distance}`]), y: parseFloat(jsonFile[i][`Y_${algo}_${distance}`]) });
-    labelsList.push(jsonFile[i]["names"])
+    if (jsonFile[i][`X_${algo}_${distance}`] != "") {
+      dataDict.push({ x: parseFloat(jsonFile[i][`X_${algo}_${distance}`]), y: parseFloat(jsonFile[i][`Y_${algo}_${distance}`]) });
+      labelsList.push(jsonFile[i]["names"])
+    }
+    else labelIncorrectSmileList.push(jsonFile[i]["names"])
   }
 
   const colors = [
@@ -228,15 +300,6 @@ function jsonToGraph(jsonFile) {
         legend: {
           display: false
         },
-        // title: {
-        //   display: true,
-        //   text: `${algo} - ${distance}`,
-        //   font: {
-        //     size: 18,
-        //     weight: 'bold',
-        //     lineHeight: 1.2,
-        //   },
-        // },
         tooltip: {
           callbacks: {
             label: function (ctx) {
@@ -282,14 +345,34 @@ function jsonToGraph(jsonFile) {
       }
     }
   };
+
+  //display the list of molecules
   let ind = 0;
   let list = document.getElementById("moleculesList");
+  let listTitle = document.getElementById("validSmilesTitle");
+  listTitle.style.display = "block";
   list.innerHTML = ""
   labelsList.forEach((item) => {
     let li = document.createElement("li");
     ind++;
-    li.setAttribute('onclick', `console.log(${ind})`)
+    li.setAttribute('onclick', `console.log("${ind}", "${item}")`)
     li.innerText = item;
+    list.appendChild(li);
+  })
+
+  ind = 0;
+  let divNoSmile = document.getElementById("noSmileDiv");
+  list = document.getElementById("noSmileList");
+  list.innerHTML = ""
+  if (labelIncorrectSmileList.length == 0) { divNoSmile.style.display = "none" }
+  else { divNoSmile.style.display = "block" }
+
+  labelIncorrectSmileList.forEach((item) => {
+    let li = document.createElement("li");
+    ind++;
+    li.setAttribute('onclick', `console.log("${ind}", "${item}")`)
+    li.innerText = item;
+    li.style.color = "red"
     list.appendChild(li);
   })
 
@@ -300,6 +383,7 @@ function jsonToGraph(jsonFile) {
   );
 }
 
+//  Transforms a csv file to Json //
 
 function csvToJson(csv) {
   const lines = csv.split(/\r\n|\r|\n/)
@@ -320,6 +404,8 @@ function csvToJson(csv) {
   }
   return result
 }
+
+//  Transforms a JSON file to an HTML table //
 
 function jsonToHTMLTable(json) {
   var col = [];
@@ -361,33 +447,13 @@ function jsonToHTMLTable(json) {
   div.setAttribute('style', 'max-height:570px; max-width:1000px;')
   div.setAttribute('class', 'table-responsive text-nowrap scrollbar-primary')
   div.appendChild(table)
-  var styles = `
-        .scrollbar - primary:: -webkit - scrollbar {
-          width: 17px;
-          background- color: #F5F5F5;
-    }
-
-      .scrollbar - primary:: -webkit - scrollbar - thumb {
-        border- radius: 10px;
-    -webkit - box - shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
-    background - color: #4285F4;
-  }
-    
-    .scrollbar - primary {
-    scrollbar - color: #4285F4 #F5F5F5;
-  }
-  `
-
-  var styleSheet = document.createElement("style")
-  styleSheet.innerText = styles
-  document.head.appendChild(styleSheet)
-
-
 
   return div;
 }
 
 export default App;
+
+//  The user can select the clumn containing the molecules' SMILE after uploading a file  //
 
 function select_column(setDisable) {
   var table = document.getElementById("sentCSV");
@@ -413,6 +479,8 @@ function select_column(setDisable) {
 
 }
 
+//  The user can select the clumn containing the molecules' name after selecting the column with the SMILE  //
+
 function select_columnName(setDisable) {
   var table = document.getElementById("sentCSV");
   var cells = table.getElementsByTagName("td");
@@ -426,6 +494,8 @@ function select_columnName(setDisable) {
   }
 
 }
+
+//  HTML table for column selections interacts with user's input  //
 
 function mouseEvent(cell, isEntering) {
   const parentTds = cell.parentElement.children;
@@ -453,6 +523,8 @@ function clickEventName(cell) {
   columns.forEach(col => { col.classList.add('selectedName'); });
 }
 
+//  Utilititary function to add a parameter in the uri  //
+
 function updateQueryStringParameter(uri, key, value) {
   var re = new RegExp("([?&])" + key + "=.*?(&|$)", "i");
   var separator = uri.indexOf('?') !== -1 ? "&" : "?";
@@ -462,4 +534,10 @@ function updateQueryStringParameter(uri, key, value) {
   else {
     return uri + separator + key + "=" + value;
   }
+}
+
+function clear(p) {
+  document.getElementById("graphMenu").innerHTML = "";
+  document.getElementById("chartDiv").innerHTML = "";
+  document.getElementById("chartDiv").appendChild(p);
 }
