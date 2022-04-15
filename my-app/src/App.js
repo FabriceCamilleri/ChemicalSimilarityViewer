@@ -156,6 +156,8 @@ function App() {
         body: formData,
       }
     ).then((response) => fetchForResult())
+
+
     //   .then((response) => response.blob())
     //   .then(res => {
     //     res.text().then(res => {
@@ -179,10 +181,10 @@ function App() {
     //   .catch((error) => {
     //     document.getElementById('chartDiv').innerHTML = "Erreur";
     //   });
-    // let loader = document.createElement("div")
-    // loader.setAttribute('class', 'loader')
-    // document.getElementById("chartDiv").innerHTML = "";
-    // document.getElementById("chartDiv").appendChild(loader)
+    let loader = document.createElement("div")
+    loader.setAttribute('class', 'loader')
+    document.getElementById("chartDiv").innerHTML = "";
+    document.getElementById("chartDiv").appendChild(loader)
   };
 
   const fetchForResult = () => {
@@ -215,10 +217,6 @@ function App() {
           .catch((error) => {
             document.getElementById('chartDiv').innerHTML = "Erreur";
           });
-        let loader = document.createElement("div")
-        loader.setAttribute('class', 'loader')
-        document.getElementById("chartDiv").innerHTML = "";
-        document.getElementById("chartDiv").appendChild(loader)
       }
     })
   }
