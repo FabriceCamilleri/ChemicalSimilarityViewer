@@ -18,7 +18,7 @@ ALLOWED_EXTENSIONS = {'csv'}
 app = Flask(__name__, static_folder="../build", static_url_path="/")
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-df = None
+df = "df global"
 
 
 @app.route('/post', methods=['POST'])
@@ -33,6 +33,7 @@ def allowed_file(filename):
 
 @app.route('/file', methods=['POST'])
 def upload_file():
+    global df
     if 'File' not in request.files:
         print("if1")
         return {'nb_molecules': -1}
@@ -58,7 +59,10 @@ def upload_file():
     df = q.enqueue(chemspace.createChemicalSpace, args=(
         df, int(index), int(indexName), listAlgo, listDist))
 
+    print("------------------------")
+    print("df = ", df)
     print("res=", df.result)
+    print("------------------------")
 
     return {'response': 0}
 
@@ -75,6 +79,10 @@ def upload_file():
 
 @app.route('/fetchForResult')
 def fetchForResult():
+    global df
+    print("FETCHING! df is : ", df)
+    if(df == "df global"):
+        return ({'result': -1}, 201)
     time.sleep(2)
     if (df.result == None):
         return ({'result': -1}, 201)
