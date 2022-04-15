@@ -17,4 +17,6 @@ conn = Redis(host=url.hostname, port=url.port, db=0, password=url.password)
 if __name__ == '__main__':
     with Connection(conn):
         worker = Worker(map(Queue, listen))
+        print("worker is launching")
         worker.work()
+        print("worker is launched")

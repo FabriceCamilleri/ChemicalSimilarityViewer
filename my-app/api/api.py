@@ -56,11 +56,11 @@ def upload_file():
     df = q.enqueue(chemspace.createChemicalSpace, args=(
         df, int(index), int(indexName), listAlgo, listDist))
 
-    print("res\n", df.result)
+    print("res=", df.result)
 
-    time.sleep(10)
+    time.sleep(25)
 
-    print("res\n", df.result)
+    print("res=", df.result)
 
     # return {'nb_molecules': df.shape[0]}
     buffer = io.BytesIO()
