@@ -80,12 +80,17 @@ def upload_file():
 @app.route('/fetchForResult')
 def fetchForResult():
     global df
+
+    time.sleep(2)
+
     print("FETCHING! df is : ", df)
+
     if(df == "df global"):
         return ({'result': -1}, 201)
-    time.sleep(2)
-    if (df.result == None):
+
+    if not (isinstance(df.result, pd.DataFrame)):
         return ({'result': -1}, 201)
+
     buffer = io.BytesIO()
     df.result.to_csv(buffer, index=False, sep=";")
     buffer.seek(0)
