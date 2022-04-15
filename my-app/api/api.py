@@ -18,6 +18,8 @@ ALLOWED_EXTENSIONS = {'csv'}
 app = Flask(__name__, static_folder="../build", static_url_path="/")
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
+df = None
+
 
 @app.route('/post', methods=['POST'])
 def updateCurrentName():
@@ -58,15 +60,28 @@ def upload_file():
 
     print("res=", df.result)
 
-    time.sleep(25)
+    return {'response': 0}
 
-    print("res=", df.result)
+    # time.sleep(25)
 
-    # return {'nb_molecules': df.shape[0]}
+    # print("res=", df.result)
+
+    # # return {'nb_molecules': df.shape[0]}
+    # buffer = io.BytesIO()
+    # df.result.to_csv(buffer, index=False, sep=";")
+    # buffer.seek(0)
+    # return send_file(buffer, mimetype="text/csv")
+
+
+@app.route('/fetchForResult')
+def fetchForResult():
+    time.sleep(2)
+    if (df.result == None):
+        return ({'result': -1}, 201)
     buffer = io.BytesIO()
     df.result.to_csv(buffer, index=False, sep=";")
     buffer.seek(0)
-    return send_file(buffer, mimetype="text/csv")
+    return (send_file(buffer, mimetype="text/csv"), 200)
 
 
 @app.route('/')

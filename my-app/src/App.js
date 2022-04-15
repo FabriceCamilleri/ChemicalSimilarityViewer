@@ -155,35 +155,73 @@ function App() {
         method: 'POST',
         body: formData,
       }
-    )
-      .then((response) => response.blob())
-      .then(res => {
-        res.text().then(res => {
-          var divRes = document.getElementById("chartDiv");
-          divRes.innerHTML = "";
-          let canvas = document.createElement("canvas");
-          canvas.setAttribute("id", "myChart");
-          divRes.appendChild(canvas);
-          jsonToGraph(csvToJson(res));
+    ).then((response) => fetchForResult())
+    //   .then((response) => response.blob())
+    //   .then(res => {
+    //     res.text().then(res => {
+    //       var divRes = document.getElementById("chartDiv");
+    //       divRes.innerHTML = "";
+    //       let canvas = document.createElement("canvas");
+    //       canvas.setAttribute("id", "myChart");
+    //       divRes.appendChild(canvas);
+    //       jsonToGraph(csvToJson(res));
 
-        });
-        let href = window.URL.createObjectURL(res)
-        document.getElementById('dlButton').style.display = "block"
-        document.getElementById('dlButton').addEventListener('click', () => {
-          window.location.assign(href)
-        })
+    //     });
+    //     let href = window.URL.createObjectURL(res)
+    //     document.getElementById('dlButton').style.display = "block"
+    //     document.getElementById('dlButton').addEventListener('click', () => {
+    //       window.location.assign(href)
+    //     })
 
-        document.getElementById('dlLabel').style.display = "block"
+    //     document.getElementById('dlLabel').style.display = "block"
 
-      })
-      .catch((error) => {
-        document.getElementById('chartDiv').innerHTML = "Erreur";
-      });
-    let loader = document.createElement("div")
-    loader.setAttribute('class', 'loader')
-    document.getElementById("chartDiv").innerHTML = "";
-    document.getElementById("chartDiv").appendChild(loader)
+    //   })
+    //   .catch((error) => {
+    //     document.getElementById('chartDiv').innerHTML = "Erreur";
+    //   });
+    // let loader = document.createElement("div")
+    // loader.setAttribute('class', 'loader')
+    // document.getElementById("chartDiv").innerHTML = "";
+    // document.getElementById("chartDiv").appendChild(loader)
   };
+
+  const fetchForResult = () => {
+    fetch(
+      '/fetchForResult',
+      { method: 'GET' }
+    ).then((response) => {
+      if (response.status == 201) fetchForResult()
+      else if (response.status == 200) {
+        response.blob()
+          .then(res => {
+            res.text().then(res => {
+              var divRes = document.getElementById("chartDiv");
+              divRes.innerHTML = "";
+              let canvas = document.createElement("canvas");
+              canvas.setAttribute("id", "myChart");
+              divRes.appendChild(canvas);
+              jsonToGraph(csvToJson(res));
+
+            });
+            let href = window.URL.createObjectURL(res)
+            document.getElementById('dlButton').style.display = "block"
+            document.getElementById('dlButton').addEventListener('click', () => {
+              window.location.assign(href)
+            })
+
+            document.getElementById('dlLabel').style.display = "block"
+
+          })
+          .catch((error) => {
+            document.getElementById('chartDiv').innerHTML = "Erreur";
+          });
+        let loader = document.createElement("div")
+        loader.setAttribute('class', 'loader')
+        document.getElementById("chartDiv").innerHTML = "";
+        document.getElementById("chartDiv").appendChild(loader)
+      }
+    })
+  }
 
   document.getElementById('chooseFile').addEventListener('change', (e) => changeHandler(e))
 
