@@ -81,7 +81,7 @@ def upload_file():
 def fetchForResult():
     global df
 
-    time.sleep(2)
+    time.sleep(5)
 
     print("FETCHING! df is : ", df)
 
