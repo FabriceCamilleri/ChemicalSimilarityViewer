@@ -7,6 +7,8 @@ from werkzeug.utils import secure_filename
 import pandas as pd
 import chemspace
 import io
+from rq import Queue
+from worker import conn
 
 
 UPLOAD_FOLDER = '/path/to/the/uploads'
@@ -48,14 +50,21 @@ def upload_file():
     print("file=", file)
     df = pd.read_csv(request.files['File'], sep=";|,", header=None)
     print("df=", df)
-    df = chemspace.createChemicalSpace(
-        df, int(index), int(indexName), listAlgo, listDist)
 
-    print("res\n", df)
+    q = Queue(connection=conn)
+
+    df = q.enqueue(chemspace.createChemicalSpace, args=(
+        df, int(index), int(indexName), listAlgo, listDist))
+
+    print("res\n", df.result)
+
+    time.sleep(10)
+
+    print("res\n", df.result)
 
     # return {'nb_molecules': df.shape[0]}
     buffer = io.BytesIO()
-    df.to_csv(buffer, index=False, sep=";")
+    df.result.to_csv(buffer, index=False, sep=";")
     buffer.seek(0)
     return send_file(buffer, mimetype="text/csv")
 
