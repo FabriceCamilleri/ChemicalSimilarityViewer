@@ -96,7 +96,15 @@ def fetchForResult():
     time.sleep(5)
 
     key = request.args.get("key")
+
+    if(key not in df):
+        print("key ", key, " is NOT in global dict df")
+        return ({'result': -1}, 201)
+
     print("key: ", key)
+
+    print("df[", df[key], "] is a dataframe: ",
+          isinstance(df[key].result, pd.DataFrame))
 
     print("FETCHING! df[", key, "] is : ", df[key])
 
