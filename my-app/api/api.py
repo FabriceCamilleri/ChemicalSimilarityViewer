@@ -66,7 +66,7 @@ def upload_file():
 
     # df = q.enqueue(chemspace.createChemicalSpace, args=(
     #     df, int(index), int(indexName), listAlgo, listDist))
-    work = q.enqueue(chemspace.createChemicalSpace, args=(
+    work = q.enqueue(chemspace.createChemicalSpace, result_ttl=86400, args=(
         work, int(index), int(indexName), listAlgo, listDist))
 
     key = createKey()
