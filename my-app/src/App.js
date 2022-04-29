@@ -22,7 +22,7 @@ function App() {
 
   var currentDF = {}
 
-  for (var i; i < 20; i++) {
+  for (var i; i < 40; i++) {
     fetch(
       "fetchForDf",
       {
@@ -31,11 +31,12 @@ function App() {
     ).then((response) => response.json()).then((result) => {
       for (var key of Object.keys(result)) {
         currentDF[key] = result[key]
+        console.log("added: ", currentDF[key], " in ", key)
       }
     })
   }
 
-  console.log(currentDF)
+  console.log("currentDF: ", currentDF)
 
   //  The user uploads a file //
 

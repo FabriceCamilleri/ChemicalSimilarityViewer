@@ -93,6 +93,7 @@ def upload_file():
 
 @app.route("/fetchForDf")
 def fetchForDf():
+    print("user fetching for DF: ", df)
     return df
 
 
