@@ -27,7 +27,7 @@ def createKey():
     global cpt
     cpt += 1
     print("CPT IS EQUAL TO : ", cpt)
-    return "df" + cpt
+    return "df" + str(cpt)
 
 
 @app.route('/post', methods=['POST'])
