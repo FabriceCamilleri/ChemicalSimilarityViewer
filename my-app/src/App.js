@@ -21,20 +21,45 @@ function App() {
   const [disable, setDisable] = useState(true);
 
   var currentDF = {}
+  var cpt = 40
 
-  for (var i; i < 40; i++) {
+  // for (var i; i < 40; i++) {
+  //   fetch(
+  //     "fetchForDf",
+  //     {
+  //       method: 'GET',
+  //     }
+  //   ).then((response) => response.json()).then((result) => {
+  //     for (var key of Object.keys(result)) {
+  //       currentDF[key] = result[key]
+  //       console.log("added: ", currentDF[key], " in ", key)
+  //     }
+  //   })
+  // }
+
+  const fetchForDF = () => {
+    console.log("call to fetchForDF with cpt: ", cpt);
     fetch(
       "fetchForDf",
       {
         method: 'GET',
       }
     ).then((response) => response.json()).then((result) => {
+      console.log("result : ", result);
+      console.log("list of result's keys: ", Object.keys(result));
       for (var key of Object.keys(result)) {
         currentDF[key] = result[key]
         console.log("added: ", currentDF[key], " in ", key)
       }
+      if (cpt > 0) {
+        cpt--
+        fetchForDF()
+      }
     })
   }
+
+  fetchForDF()
+
 
   console.log("currentDF: ", currentDF)
 
