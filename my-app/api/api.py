@@ -18,7 +18,12 @@ ALLOWED_EXTENSIONS = {'csv'}
 app = Flask(__name__, static_folder="../build", static_url_path="/")
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-df = "df global"
+# df = "df global"
+df = {}
+
+
+def createKey():
+    return "df" + str(len(df))
 
 
 @app.route('/post', methods=['POST'])
@@ -51,20 +56,27 @@ def upload_file():
         request.args.get('d2')), int(request.args.get('d3'))]
     # "[true, false]
     print("file=", file)
-    df = pd.read_csv(request.files['File'], sep=";|,", header=None)
+    # df = pd.read_csv(request.files['File'], sep=";|,", header=None)
+    work = pd.read_csv(request.files['File'], sep=";|,", header=None)
     print("df=", df)
 
     q = Queue(connection=conn)
 
-    df = q.enqueue(chemspace.createChemicalSpace, args=(
-        df, int(index), int(indexName), listAlgo, listDist))
+    # df = q.enqueue(chemspace.createChemicalSpace, args=(
+    #     df, int(index), int(indexName), listAlgo, listDist))
+    work = q.enqueue(chemspace.createChemicalSpace, args=(
+        work, int(index), int(indexName), listAlgo, listDist))
+
+    key = createKey()
+
+    df[key] = work
 
     print("------------------------")
-    print("df = ", df)
-    print("res=", df.result)
+    print("df[", key, "] = ", df[key])
+    print("res=", df[key].result)
     print("------------------------")
 
-    return {'response': 0}
+    return {'key': key}
 
     # time.sleep(25)
 
@@ -83,16 +95,19 @@ def fetchForResult():
 
     time.sleep(5)
 
-    print("FETCHING! df is : ", df)
+    key = request.args.get("key")
+    print("key: ", key)
 
-    if(df == "df global"):
+    print("FETCHING! df[", key, "] is : ", df[key])
+
+    if(df[key] == "df global"):
         return ({'result': -1}, 201)
 
-    if not (isinstance(df.result, pd.DataFrame)):
+    if not (isinstance(df[key].result, pd.DataFrame)):
         return ({'result': -1}, 201)
 
     buffer = io.BytesIO()
-    df.result.to_csv(buffer, index=False, sep=";")
+    df[key].result.to_csv(buffer, index=False, sep=";")
     buffer.seek(0)
     return (send_file(buffer, mimetype="text/csv"), 200)
 

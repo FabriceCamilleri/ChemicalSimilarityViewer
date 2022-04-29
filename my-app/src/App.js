@@ -155,7 +155,11 @@ function App() {
         method: 'POST',
         body: formData,
       }
-    ).then((response) => fetchForResult())
+    ).then((response) => {
+      console.log("response: ", response);
+      console.log("response.key: ", response.key);
+      fetchForResult(response.key)
+    })
 
 
     //   .then((response) => response.blob())
@@ -187,12 +191,13 @@ function App() {
     document.getElementById("chartDiv").appendChild(loader)
   };
 
-  const fetchForResult = () => {
+  const fetchForResult = (key) => {
+    var url = updateQueryStringParameter('/fetchForResult', "key", key)
     fetch(
-      '/fetchForResult',
+      url,
       { method: 'GET' }
     ).then((response) => {
-      if (response.status == 201) fetchForResult()
+      if (response.status == 201) fetchForResult(key)
       else if (response.status == 200) {
         response.blob()
           .then(res => {
