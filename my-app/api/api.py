@@ -97,6 +97,8 @@ def fetchForResult():
 
     key = request.args.get("key")
 
+    print("df: ", df)
+
     if(key not in df):
         print("key ", key, " is NOT in global dict df")
         return ({'result': -1}, 201)
