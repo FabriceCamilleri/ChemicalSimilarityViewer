@@ -155,10 +155,10 @@ function App() {
         method: 'POST',
         body: formData,
       }
-    ).then((response) => {
-      console.log("response: ", response);
-      console.log("response.key: ", response.key);
-      fetchForResult(response.key)
+    ).then((response) => response.json()).then((result) => {
+      console.log("response: ", result);
+      console.log("response.key: ", result.key);
+      fetchForResult(result.key)
     })
 
 
