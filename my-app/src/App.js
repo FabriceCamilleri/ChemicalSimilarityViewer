@@ -20,6 +20,23 @@ function App() {
   const [selectedFile, setSelectedFile] = useState();
   const [disable, setDisable] = useState(true);
 
+  var currentDF = {}
+
+  for (var i; i < 20; i++) {
+    fetch(
+      "fetchForDf",
+      {
+        method: 'GET',
+      }
+    ).then((response) => response.json()).then((result) => {
+      for (var key of Object.keys(result)) {
+        currentDF[key] = result[key]
+      }
+    })
+  }
+
+  console.log(currentDF)
+
   //  The user uploads a file //
 
   const changeHandler = (event) => {

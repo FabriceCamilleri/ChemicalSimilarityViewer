@@ -91,6 +91,11 @@ def upload_file():
     # return send_file(buffer, mimetype="text/csv")
 
 
+@app.route("/fetchForDf")
+def fetchForDf():
+    return df
+
+
 @app.route('/fetchForResult')
 def fetchForResult():
     global df
