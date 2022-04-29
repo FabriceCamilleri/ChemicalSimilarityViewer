@@ -93,8 +93,14 @@ def upload_file():
 
 @app.route("/fetchForDf")
 def fetchForDf():
-    print("user fetching for DF: ", df)
-    return df
+    print("user fetching for DF: ", df.keys())
+    dfcopy = df.copy()
+    for key in dfcopy.keys():
+        if(isinstance(df[key].result, pd.DataFrame)):
+            dfcopy[key] = "done"
+        else:
+            dfcopy[key] = "In progress"
+    return dfcopy
 
 
 @app.route('/fetchForResult')

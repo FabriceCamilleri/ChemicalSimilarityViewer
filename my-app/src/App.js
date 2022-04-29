@@ -44,7 +44,10 @@ function App() {
       {
         method: 'GET',
       }
-    ).then((response) => response.json()).then((result) => {
+    ).then((response) => {
+      console.log("response: ", response);
+      response.json()
+    }).then((result) => {
       console.log("result : ", result);
       console.log("list of result's keys: ", Object.keys(result));
       for (var key of Object.keys(result)) {
