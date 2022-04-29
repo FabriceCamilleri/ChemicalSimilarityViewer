@@ -94,7 +94,7 @@ def upload_file():
 @app.route("/fetchForDf")
 def fetchForDf():
     print("user fetching for DF: ", df.keys())
-    if(len(df.keys() == 0)):
+    if(len(df.keys()) == 0):
         print("empty df here")
         return {"dico": "empty"}
     dfcopy = df.copy()
