@@ -38,30 +38,25 @@ function App() {
   // }
 
   const fetchForDF = () => {
-    console.log("call to fetchForDF with cpt: ", cpt);
     fetch(
       "fetchForDf",
       {
         method: 'GET',
       }
     ).then((response) => response.json()).then((result) => {
-      console.log("result : ", result);
-      console.log("list of result's keys: ", Object.keys(result));
       for (var key of Object.keys(result)) {
         currentDF[key] = result[key]
-        console.log("added: ", currentDF[key], " in ", key)
       }
       if (cpt > 0) {
         cpt--
         fetchForDF()
       }
+      if (cpt <= 0)
+        console.log("currentDF: ", currentDF)
     })
   }
 
   fetchForDF()
-
-
-  console.log("currentDF: ", currentDF)
 
   //  The user uploads a file //
 
