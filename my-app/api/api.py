@@ -20,14 +20,12 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 # df = "df global"
 df = {}
-cpt = 0
 
 
 def createKey():
-    global cpt
-    cpt += 1
-    print("CPT IS EQUAL TO : ", cpt)
-    return "df" + str(cpt)
+    id = time.time_ns()
+    print("ID IS EQUAL TO : ", id)
+    return "df" + str(id)
 
 
 @app.route('/post', methods=['POST'])
