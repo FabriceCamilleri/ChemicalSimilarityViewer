@@ -31,4 +31,3 @@ tqdm==4.63.0
 umap-learn==0.5.2
 Werkzeug==2.0.3
 wrapt==1.14.0
-newrelic
