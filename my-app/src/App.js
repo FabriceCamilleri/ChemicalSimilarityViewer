@@ -61,22 +61,24 @@ function App() {
           var ind = 0
           for (var key of Object.keys(currentDF)) {
             console.log(key + " -> " + currentDF[key])
-            let li = document.createElement("li");
-            ind++;
-            // li.setAttribute('onclick', `fetchForResult("${key}")`)
-            li.onclick = () => fetchForResult(key)
-            var dateKey = new Date(parseInt("df1651741925675425300".slice(2, -6)))
-            var p = document.createElement("p")
-            p.style.color = currentDF[key] == "Done" ? "green" : "orange"
-            p.innerHTML = "Status: " + currentDF[key]
-            li.innerText = dateKey.getFullYear() + "/" + ((dateKey.getMonth() + 1).toString()).padStart(2, '0') + "/" + ((dateKey.getDay() + 1).toString()).padStart(2, '0') + " - " + (dateKey.getHours().toString()).padStart(2, '0') + ":" + (dateKey.getMinutes().toString()).padStart(2, '0') + ":" + (dateKey.getSeconds().toString()).padStart(2, '0')
-            list.appendChild(li);
-            li.appendChild(p)
-            li.style.padding = "5px"
+            if (currentDF[key] != "Empty") {
+              let li = document.createElement("li");
+              ind++;
+              // li.setAttribute('onclick', `fetchForResult("${key}")`)
+              li.onclick = () => fetchForResult(key)
+              var dateKey = new Date(parseInt(key.slice(2, -6)))
+              var p = document.createElement("p")
+              p.style.color = currentDF[key] == "Done" ? "green" : "orange"
+              p.innerHTML = "Status: " + currentDF[key]
+              li.innerText = dateKey.getFullYear() + "/" + ((dateKey.getMonth() + 1).toString()).padStart(2, '0') + "/" + ((dateKey.getDay() + 1).toString()).padStart(2, '0') + " - " + (dateKey.getHours().toString()).padStart(2, '0') + ":" + (dateKey.getMinutes().toString()).padStart(2, '0') + ":" + (dateKey.getSeconds().toString()).padStart(2, '0')
+              list.appendChild(li);
+              li.appendChild(p)
+              li.style.padding = "5px"
+            }
+            list.style.display = "table"
+            list.style.margin = "0 auto"
+            document.getElementById("chartDiv").appendChild(list)
           }
-          list.style.display = "table"
-          list.style.margin = "0 auto"
-          document.getElementById("chartDiv").appendChild(list)
         }
       })
     }
