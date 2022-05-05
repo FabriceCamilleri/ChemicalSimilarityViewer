@@ -61,7 +61,7 @@ function App() {
           var ind = 0
           for (var key of Object.keys(currentDF)) {
             console.log(key + " -> " + currentDF[key])
-            if (currentDF[key] != "Empty") {
+            if (currentDF[key] != "Empty" || key == "dico") {
               let li = document.createElement("li");
               ind++;
               // li.setAttribute('onclick', `fetchForResult("${key}")`)
