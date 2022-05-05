@@ -13,6 +13,7 @@ var selected_column;
 var selected_columnName;
 var jsonResult;
 var myChart;
+var cpt = 40;
 const languageEncoding = require("detect-file-encoding-and-language");
 
 
@@ -21,7 +22,6 @@ function App() {
   const [disable, setDisable] = useState(true);
 
   var currentDF = {}
-  var cpt = 40
 
   // for (var i; i < 40; i++) {
   //   fetch(
@@ -38,45 +38,48 @@ function App() {
   // }
 
   const fetchForDF = () => {
-    fetch(
-      "fetchForDf",
-      {
-        method: 'GET',
-      }
-    ).then((response) => response.json()).then((result) => {
-      for (var key of Object.keys(result)) {
-        currentDF[key] = result[key]
-      }
-      if (cpt > 0) {
-        cpt--
-        fetchForDF()
-      }
-      if (cpt <= 0) {
-        console.log("currentDF: ", currentDF)
-        document.getElementById("chartDiv").innerHTML = "<b>Previous Tasks (click to retrieve results)</b><br><br>"
-
-        var list = document.createElement("ul")
-        var ind = 0
-        for (var key of Object.keys(currentDF)) {
-          console.log(key + " -> " + currentDF[key])
-          let li = document.createElement("li");
-          ind++;
-          // li.setAttribute('onclick', `fetchForResult("${key}")`)
-          li.onclick = () => fetchForResult(key)
-          var dateKey = new Date(parseInt("df1651741925675425300".slice(2, -6)))
-          var p = document.createElement("p")
-          p.style.color = currentDF[key] == "Done" ? "green" : "orange"
-          p.innerHTML = "Status: " + currentDF[key]
-          li.innerText = dateKey.getFullYear() + "/" + ((dateKey.getMonth() + 1).toString()).padStart(2, '0') + "/" + ((dateKey.getDay() + 1).toString()).padStart(2, '0') + " - " + (dateKey.getHours().toString()).padStart(2, '0') + ":" + (dateKey.getMinutes().toString()).padStart(2, '0') + ":" + (dateKey.getSeconds().toString()).padStart(2, '0')
-          list.appendChild(li);
-          li.appendChild(p)
-          li.style.padding = "5px"
+    if (cpt >= 0) {
+      fetch(
+        "fetchForDf",
+        {
+          method: 'GET',
         }
-        list.style.display = "table"
-        list.style.margin = "0 auto"
-        document.getElementById("chartDiv").appendChild(list)
-      }
-    })
+      ).then((response) => response.json()).then((result) => {
+        for (var key of Object.keys(result)) {
+          currentDF[key] = result[key]
+        }
+        if (cpt > 0) {
+          cpt--
+          fetchForDF()
+        }
+        else {
+          cpt--
+          console.log("currentDF: ", currentDF)
+          document.getElementById("chartDiv").innerHTML = "<b>Previous Tasks (click to retrieve results)</b><br><br>"
+
+          var list = document.createElement("ul")
+          var ind = 0
+          for (var key of Object.keys(currentDF)) {
+            console.log(key + " -> " + currentDF[key])
+            let li = document.createElement("li");
+            ind++;
+            // li.setAttribute('onclick', `fetchForResult("${key}")`)
+            li.onclick = () => fetchForResult(key)
+            var dateKey = new Date(parseInt("df1651741925675425300".slice(2, -6)))
+            var p = document.createElement("p")
+            p.style.color = currentDF[key] == "Done" ? "green" : "orange"
+            p.innerHTML = "Status: " + currentDF[key]
+            li.innerText = dateKey.getFullYear() + "/" + ((dateKey.getMonth() + 1).toString()).padStart(2, '0') + "/" + ((dateKey.getDay() + 1).toString()).padStart(2, '0') + " - " + (dateKey.getHours().toString()).padStart(2, '0') + ":" + (dateKey.getMinutes().toString()).padStart(2, '0') + ":" + (dateKey.getSeconds().toString()).padStart(2, '0')
+            list.appendChild(li);
+            li.appendChild(p)
+            li.style.padding = "5px"
+          }
+          list.style.display = "table"
+          list.style.margin = "0 auto"
+          document.getElementById("chartDiv").appendChild(list)
+        }
+      })
+    }
   }
 
   fetchForDF()
