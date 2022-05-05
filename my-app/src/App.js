@@ -279,6 +279,28 @@ function App() {
               let canvas = document.createElement("canvas");
               canvas.setAttribute("id", "myChart");
               divRes.appendChild(canvas);
+
+              // option1 = 'tsne'
+              // option2 = 'umap'
+              // option3 = 'DiceDist'
+              // option4 = 'CosDist'
+              // option5 = 'TanimotoDist'
+
+              const lines = res.split(/\r\n|\r|\n/)
+              const headers = lines[0].split(/,|;/)
+              let checkList = [false, false, false, false, false]
+              lines.forEach(t => {
+                let pieces = t.split("_")
+                if (pieces.length == 3) {
+                  if (pieces[1] == "umap") checkList[1] = true
+                  if (pieces[1] == "tsne") checkList[0] = true
+                  if (pieces[2] == "DiceDist") checkList[2] = true
+                  if (pieces[2] == "CosDist") checkList[3] = true
+                  if (pieces[2] == "TanimotoDist") checkList[4] = true
+                }
+              })
+              createMenu(checkList)
+
               jsonToGraph(csvToJson(res));
 
             });
