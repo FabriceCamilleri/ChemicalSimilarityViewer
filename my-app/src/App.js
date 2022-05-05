@@ -65,7 +65,13 @@ function App() {
               let li = document.createElement("li");
               ind++;
               // li.setAttribute('onclick', `fetchForResult("${key}")`)
-              li.onclick = () => fetchForResult(key)
+              li.onclick = () => {
+                let loader = document.createElement("div")
+                loader.setAttribute('class', 'loader')
+                document.getElementById("chartDiv").innerHTML = ""
+                document.getElementById("chartDiv").appendChild(loader)
+                fetchForResult(key)
+              }
               var dateKey = new Date(parseInt(key.slice(2, -6)))
               var p = document.createElement("p")
               p.style.color = currentDF[key] == "Done" ? "green" : "orange"
