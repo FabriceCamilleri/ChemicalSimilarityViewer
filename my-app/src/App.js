@@ -289,8 +289,9 @@ function App() {
               const lines = res.split(/\r\n|\r|\n/)
               const headers = lines[0].split(/,|;/)
               let checkList = [false, false, false, false, false]
-              lines.forEach(t => {
+              headers.forEach(t => {
                 let pieces = t.split("_")
+                console.log("pieces: " + pieces);
                 if (pieces.length == 3) {
                   if (pieces[1] == "umap") checkList[1] = true
                   if (pieces[1] == "tsne") checkList[0] = true
