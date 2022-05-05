@@ -20,6 +20,67 @@ function App() {
   const [selectedFile, setSelectedFile] = useState();
   const [disable, setDisable] = useState(true);
 
+  var currentDF = {}
+  var cpt = 40
+
+  // for (var i; i < 40; i++) {
+  //   fetch(
+  //     "fetchForDf",
+  //     {
+  //       method: 'GET',
+  //     }
+  //   ).then((response) => response.json()).then((result) => {
+  //     for (var key of Object.keys(result)) {
+  //       currentDF[key] = result[key]
+  //       console.log("added: ", currentDF[key], " in ", key)
+  //     }
+  //   })
+  // }
+
+  const fetchForDF = () => {
+    fetch(
+      "fetchForDf",
+      {
+        method: 'GET',
+      }
+    ).then((response) => response.json()).then((result) => {
+      for (var key of Object.keys(result)) {
+        currentDF[key] = result[key]
+      }
+      if (cpt > 0) {
+        cpt--
+        fetchForDF()
+      }
+      if (cpt <= 0) {
+        console.log("currentDF: ", currentDF)
+        document.getElementById("chartDiv").innerHTML = "<b>Previous Tasks (click to retrieve results)</b><br><br>"
+
+        var list = document.createElement("ul")
+        var ind = 0
+        for (var key of Object.keys(currentDF)) {
+          console.log(key + " -> " + currentDF[key])
+          let li = document.createElement("li");
+          ind++;
+          // li.setAttribute('onclick', `fetchForResult("${key}")`)
+          li.onclick = () => fetchForResult(key)
+          var dateKey = new Date(parseInt("df1651741925675425300".slice(2, -6)))
+          var p = document.createElement("p")
+          p.style.color = currentDF[key] == "Done" ? "green" : "orange"
+          p.innerHTML = "Status: " + currentDF[key]
+          li.innerText = dateKey.getFullYear() + "/" + ((dateKey.getMonth() + 1).toString()).padStart(2, '0') + "/" + ((dateKey.getDay() + 1).toString()).padStart(2, '0') + " - " + (dateKey.getHours().toString()).padStart(2, '0') + ":" + (dateKey.getMinutes().toString()).padStart(2, '0') + ":" + (dateKey.getSeconds().toString()).padStart(2, '0')
+          list.appendChild(li);
+          li.appendChild(p)
+          li.style.padding = "5px"
+        }
+        list.style.display = "table"
+        list.style.margin = "0 auto"
+        document.getElementById("chartDiv").appendChild(list)
+      }
+    })
+  }
+
+  fetchForDF()
+
   //  The user uploads a file //
 
   const changeHandler = (event) => {
@@ -155,35 +216,76 @@ function App() {
         method: 'POST',
         body: formData,
       }
-    )
-      .then((response) => response.blob())
-      .then(res => {
-        res.text().then(res => {
-          var divRes = document.getElementById("chartDiv");
-          divRes.innerHTML = "";
-          let canvas = document.createElement("canvas");
-          canvas.setAttribute("id", "myChart");
-          divRes.appendChild(canvas);
-          jsonToGraph(csvToJson(res));
+    ).then((response) => response.json()).then((result) => {
+      console.log("response: ", result);
+      console.log("response.key: ", result.key);
+      fetchForResult(result.key)
+    })
 
-        });
-        let href = window.URL.createObjectURL(res)
-        document.getElementById('dlButton').style.display = "block"
-        document.getElementById('dlButton').addEventListener('click', () => {
-          window.location.assign(href)
-        })
 
-        document.getElementById('dlLabel').style.display = "block"
+    //   .then((response) => response.blob())
+    //   .then(res => {
+    //     res.text().then(res => {
+    //       var divRes = document.getElementById("chartDiv");
+    //       divRes.innerHTML = "";
+    //       let canvas = document.createElement("canvas");
+    //       canvas.setAttribute("id", "myChart");
+    //       divRes.appendChild(canvas);
+    //       jsonToGraph(csvToJson(res));
 
-      })
-      .catch((error) => {
-        document.getElementById('chartDiv').innerHTML = "Erreur";
-      });
+    //     });
+    //     let href = window.URL.createObjectURL(res)
+    //     document.getElementById('dlButton').style.display = "block"
+    //     document.getElementById('dlButton').addEventListener('click', () => {
+    //       window.location.assign(href)
+    //     })
+
+    //     document.getElementById('dlLabel').style.display = "block"
+
+    //   })
+    //   .catch((error) => {
+    //     document.getElementById('chartDiv').innerHTML = "Erreur";
+    //   });
     let loader = document.createElement("div")
     loader.setAttribute('class', 'loader')
     document.getElementById("chartDiv").innerHTML = "";
     document.getElementById("chartDiv").appendChild(loader)
   };
+
+  const fetchForResult = (key) => {
+    var url = updateQueryStringParameter('/fetchForResult', "key", key)
+    fetch(
+      url,
+      { method: 'GET' }
+    ).then((response) => {
+      if (response.status == 201) fetchForResult(key)
+      else if (response.status == 200) {
+        response.blob()
+          .then(res => {
+            res.text().then(res => {
+              var divRes = document.getElementById("chartDiv");
+              divRes.innerHTML = "";
+              let canvas = document.createElement("canvas");
+              canvas.setAttribute("id", "myChart");
+              divRes.appendChild(canvas);
+              jsonToGraph(csvToJson(res));
+
+            });
+            let href = window.URL.createObjectURL(res)
+            document.getElementById('dlButton').style.display = "block"
+            document.getElementById('dlButton').addEventListener('click', () => {
+              window.location.assign(href)
+            })
+
+            document.getElementById('dlLabel').style.display = "block"
+
+          })
+          .catch((error) => {
+            document.getElementById('chartDiv').innerHTML = "Erreur";
+          });
+      }
+    })
+  }
 
   document.getElementById('chooseFile').addEventListener('change', (e) => changeHandler(e))
 
