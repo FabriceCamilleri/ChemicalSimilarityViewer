@@ -61,22 +61,30 @@ function App() {
           var ind = 0
           for (var key of Object.keys(currentDF)) {
             console.log(key + " -> " + currentDF[key])
-            let li = document.createElement("li");
-            ind++;
-            // li.setAttribute('onclick', `fetchForResult("${key}")`)
-            li.onclick = () => fetchForResult(key)
-            var dateKey = new Date(parseInt("df1651741925675425300".slice(2, -6)))
-            var p = document.createElement("p")
-            p.style.color = currentDF[key] == "Done" ? "green" : "orange"
-            p.innerHTML = "Status: " + currentDF[key]
-            li.innerText = dateKey.getFullYear() + "/" + ((dateKey.getMonth() + 1).toString()).padStart(2, '0') + "/" + ((dateKey.getDay() + 1).toString()).padStart(2, '0') + " - " + (dateKey.getHours().toString()).padStart(2, '0') + ":" + (dateKey.getMinutes().toString()).padStart(2, '0') + ":" + (dateKey.getSeconds().toString()).padStart(2, '0')
-            list.appendChild(li);
-            li.appendChild(p)
-            li.style.padding = "5px"
+            if (currentDF[key] != "Empty") {
+              let li = document.createElement("li");
+              ind++;
+              // li.setAttribute('onclick', `fetchForResult("${key}")`)
+              li.onclick = () => {
+                let loader = document.createElement("div")
+                loader.setAttribute('class', 'loader')
+                document.getElementById("chartDiv").innerHTML = ""
+                document.getElementById("chartDiv").appendChild(loader)
+                fetchForResult(key)
+              }
+              var dateKey = new Date(parseInt(key.slice(2, -6)))
+              var p = document.createElement("p")
+              p.style.color = currentDF[key] == "Done" ? "green" : "orange"
+              p.innerHTML = "Status: " + currentDF[key]
+              li.innerText = dateKey.getFullYear() + "/" + ((dateKey.getMonth() + 1).toString()).padStart(2, '0') + "/" + ((dateKey.getDay() + 1).toString()).padStart(2, '0') + " - " + (dateKey.getHours().toString()).padStart(2, '0') + ":" + (dateKey.getMinutes().toString()).padStart(2, '0') + ":" + (dateKey.getSeconds().toString()).padStart(2, '0')
+              list.appendChild(li);
+              li.appendChild(p)
+              li.style.padding = "5px"
+            }
+            list.style.display = "table"
+            list.style.margin = "0 auto"
+            document.getElementById("chartDiv").appendChild(list)
           }
-          list.style.display = "table"
-          list.style.margin = "0 auto"
-          document.getElementById("chartDiv").appendChild(list)
         }
       })
     }
@@ -279,6 +287,29 @@ function App() {
               let canvas = document.createElement("canvas");
               canvas.setAttribute("id", "myChart");
               divRes.appendChild(canvas);
+
+              // option1 = 'tsne'
+              // option2 = 'umap'
+              // option3 = 'DiceDist'
+              // option4 = 'CosDist'
+              // option5 = 'TanimotoDist'
+
+              const lines = res.split(/\r\n|\r|\n/)
+              const headers = lines[0].split(/,|;/)
+              let checkList = [false, false, false, false, false]
+              headers.forEach(t => {
+                let pieces = t.split("_")
+                console.log("pieces: " + pieces);
+                if (pieces.length == 3) {
+                  if (pieces[1] == "umap") checkList[1] = true
+                  if (pieces[1] == "tsne") checkList[0] = true
+                  if (pieces[2] == "DiceDist") checkList[2] = true
+                  if (pieces[2] == "CosDist") checkList[3] = true
+                  if (pieces[2] == "TanimotoDist") checkList[4] = true
+                }
+              })
+              createMenu(checkList)
+
               jsonToGraph(csvToJson(res));
 
             });

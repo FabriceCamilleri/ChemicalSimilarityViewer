@@ -96,13 +96,13 @@ def fetchForDf():
     print("user fetching for DF: ", df.keys())
     if(len(df.keys()) == 0):
         print("empty df here")
-        return {"dico": "empty"}
+        return {"dico": "Empty"}
     dfcopy = df.copy()
     for key in dfcopy.keys():
         if(isinstance(df[key].result, pd.DataFrame)):
-            dfcopy[key] = "done"
+            dfcopy[key] = "Done"
         else:
-            dfcopy[key] = "In progress"
+            dfcopy[key] = "In Progress"
     print("dfcopy: ", dfcopy)
     return dfcopy
 
