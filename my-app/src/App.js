@@ -46,7 +46,7 @@ function App() {
         }
       ).then((response) => response.json()).then((result) => {
         for (var key of Object.keys(result)) {
-          currentDF[key] = result[key]
+          if (key != "dico" && result[key] != "Empty") currentDF[key] = result[key]
         }
         if (cpt > 0) {
           cpt--
@@ -61,7 +61,7 @@ function App() {
           var ind = 0
           for (var key of Object.keys(currentDF)) {
             console.log(key + " -> " + currentDF[key])
-            if (currentDF[key] != "Empty" || key == "dico") {
+            if (currentDF[key] != "Empty" && key != "dico") {
               let li = document.createElement("li");
               ind++;
               // li.setAttribute('onclick', `fetchForResult("${key}")`)
