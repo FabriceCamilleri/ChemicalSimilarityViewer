@@ -145,6 +145,14 @@ function App() {
     var d1 = + document.getElementById("d1").checked
     var d2 = + document.getElementById("d2").checked
     var d3 = + document.getElementById("d3").checked
+    if (!(algo1 | algo2)) {
+      document.getElementById("chartDiv").innerHTML = "Please choose an algorithm.";
+      return;
+    }
+    if (!(d1 | d2 | d3)) {
+      document.getElementById("chartDiv").innerHTML = "Please choose a distance.";
+      return;
+    }
     url = updateQueryStringParameter(url, "d1", d1)
     url = updateQueryStringParameter(url, "d2", d2)
     url = updateQueryStringParameter(url, "d3", d3)
