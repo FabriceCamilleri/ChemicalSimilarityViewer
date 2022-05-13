@@ -6,8 +6,11 @@ import Chart from 'chart.js/auto';
 // import logo from './logo.svg';
 import './App.css';
 
+//Encodage pris en compte pour le fichier d'entrée
 const ALLOWED_ENCODINGS = ['UTF-8']
-const ALLOWED_FILES = ['csv', 'xlsx', 'xls']
+
+//Extensions du fichiers d'entrée pris en compte
+const ALLOWED_FILES = ['csv', 'xlsx']
 
 var selected_column;
 var selected_columnName;
@@ -16,11 +19,13 @@ var myChart;
 var cpt = 40;
 const languageEncoding = require("detect-file-encoding-and-language");
 
-
+//Application principale
 function App() {
+  //Stocke le fichier soumis par l'utilisateur
   const [selectedFile, setSelectedFile] = useState();
   const [disable, setDisable] = useState(true);
 
+  //Dictionnaire qui stocke le statut (Done, In Progress) associé à sa clé pour chaque travail
   var currentDF = {}
 
   // for (var i; i < 40; i++) {
@@ -37,43 +42,71 @@ function App() {
   //   })
   // }
 
+  /*
+  Au lancement du front-end, on récupère et affiche tous les travaux stockés dans le back-end en effectuant plusieurs
+  fois des requêtes de manière itéré pour s'assurer d'interroger tous les process du back.
+  On rassemble tout les résultats dans currentDF.
+  */
   const fetchForDF = () => {
+    //s'il nous reste des itérations
     if (cpt >= 0) {
+      //requête get
       fetch(
         "fetchForDf",
         {
           method: 'GET',
         }
       ).then((response) => response.json()).then((result) => {
+        //on récupère la réponse qu'on traduit en json, on itère sur les attributs
         for (var key of Object.keys(result)) {
+          //on l'ajoute au dictionnaire si le statut reçu n'est pas "Empty"
+          //("Empty" si dans le process intérrogé, la clé dans le dictionnaire global n'est pas présente)
           if (key != "dico" && result[key] != "Empty") currentDF[key] = result[key]
         }
+        //appel récursif
         if (cpt > 0) {
           cpt--
           fetchForDF()
         }
+        //après avoir effectué toutes les requêtes
         else {
           cpt--
           console.log("currentDF: ", currentDF)
           document.getElementById("chartDiv").innerHTML = "<b>Previous Tasks (click to retrieve results)</b><br><br>"
 
+          //on crée une liste html
           var list = document.createElement("ul")
           var ind = 0
+
+          //pour chaque clé du dictionnaire, on ajoute à cette liste une ligne contenant
+          //la date de la soumission du fichier au back-end correspondant à la clé ainsi que l'état de son traitement
+          //le travail est récupérable au click de celle-ci
           for (var key of Object.keys(currentDF)) {
             console.log(key + " -> " + currentDF[key])
             if (currentDF[key] != "Empty" && key != "dico") {
               let li = document.createElement("li");
               ind++;
               // li.setAttribute('onclick', `fetchForResult("${key}")`)
+              //Au click de la ligne, on affiche le logo du chargement et on demande au back-end
+              //de nous fournir le résultat correspondant (grace à la clé qui est unique)
               li.onclick = () => {
                 let loader = document.createElement("div")
                 loader.setAttribute('class', 'loader')
+                //on vide la div
                 document.getElementById("chartDiv").innerHTML = ""
                 document.getElementById("chartDiv").appendChild(loader)
+                //on récupère le résultat
                 fetchForResult(key)
               }
+
+              //L'unicité de la clé est assurée par le fait qu'elle est crée à partir du temps écoulés 
+              //(en nano-secondes) au moment ou le back-end reçoit le fichier soumit par l'utilisateur
+
+              //On parse la clé pour en obtenir la date
               var dateKey = new Date(parseInt(key.slice(2, -6)))
               var p = document.createElement("p")
+
+              //La clé peut avoir deux valeurs : Done, affiché en vert (le back-end a fini de calculer le résultat) ou In Progress, en orange
               p.style.color = currentDF[key] == "Done" ? "green" : "orange"
               p.innerHTML = "Status: " + currentDF[key]
               li.innerText = dateKey.getFullYear() + "/" + ((dateKey.getMonth() + 1).toString()).padStart(2, '0') + "/" + ((dateKey.getDay() + 1).toString()).padStart(2, '0') + " - " + (dateKey.getHours().toString()).padStart(2, '0') + ":" + (dateKey.getMinutes().toString()).padStart(2, '0') + ":" + (dateKey.getSeconds().toString()).padStart(2, '0')
@@ -83,6 +116,7 @@ function App() {
             }
             list.style.display = "table"
             list.style.margin = "0 auto"
+            //Ajout de l'élément liste dans la div principale
             document.getElementById("chartDiv").appendChild(list)
           }
         }
@@ -95,11 +129,15 @@ function App() {
   //  The user uploads a file //
 
   const changeHandler = (event) => {
+    //change event appelé dès que l'utilisateur entre un fichier
     var filename = document.getElementById('chooseFile').value;
     var fileSub = event.target.files[0];
 
     let fileUp = document.getElementsByClassName('file-upload')[0]
     let noFile = document.getElementById('noFile')
+
+    //class 'active' pour le css quand fichier valide
+    //class 'wrong' sinon
     if (/^\s*$/.test(filename)) {
       fileUp.classList.remove('active');
       fileUp.classList.remove('wrong');
@@ -109,12 +147,15 @@ function App() {
       fileUp.classList.remove('wrong');
       fileUp.classList.add('active');
       let filena = filename.replace("C:\\fakepath\\", "")
+      //à l'affichage, on troncatène le nom du fichier si trop long
       noFile.innerHTML = filena.length > 28 ? filena.substring(0, 25) + '...' : filena;
     }
 
     if (!fileSub) {
       return
     }
+
+    //on vérifie que l'extension du fichier soit valide, sinon on affiche un message d'avertissement
     if (!ALLOWED_FILES.includes(event.target.files[0].name.split('.')[1])) {
 
       fileUp.classList.remove('active');
@@ -124,6 +165,7 @@ function App() {
       return;
     }
 
+    //on vérifie que l'encodage du fichier soit valide, sinon on affiche un message d'avertissement
     languageEncoding(fileSub).then((fileInfo) => {
       if (!ALLOWED_ENCODINGS.includes(fileInfo.encoding) && fileSub.name.split('.')[1] == "csv") {
         fileUp.classList.remove('active');
@@ -132,12 +174,13 @@ function App() {
         document.getElementById("chartDiv").innerHTML = "The file encoding: " + fileInfo.encoding + " is not correct, please submit an UTF-8-encoded file";
         return;
       }
+      //si le fichier est valide, on set le current selected file
       else {
         setSelectedFile(event.target.files[0]);
         setDisable(true)
+        //on affiche le fichier dans une table
 
-
-
+        //affichage les instructions
         let text = document.createElement("p")
         text.innerHTML = "Select the column containing SMILES code"
         text.setAttribute("id", "selectionText");
@@ -146,12 +189,14 @@ function App() {
         strong.appendChild(text)
         p.appendChild(strong)
 
-
+        //On crée le reader pour parser le fichier
         let reader = new FileReader();
 
+        //2 types d'extensions acceptés : xlsx et csv
 
         //--- xlsx
         if (event.target.files[0].name.split('.')[1] == 'xlsx') {
+          //parsing
           reader.onload = function (e) {
             var data = e.target.result;
             var XLSX = require("xlsx");
@@ -160,19 +205,28 @@ function App() {
             });
             workbook.SheetNames.forEach((sheetName) => {
               var XLSX = require("xlsx");
+              //on convertit le xlsx en json
               let json_object = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+              //ajout du paragraphe d'instruction
               clear(p)
+              //ajout de la table (on convertit le json en table html)
               document.getElementById("chartDiv").appendChild(jsonToHTMLTable(json_object));
+              //les colonnes sont interactibles (on peut les sélectionner)
               select_column(setDisable)
+              //puis conversion du json en csv (comme le back-end s'attendra à recevoir un csv et non pas un xlsx)
               let converter = require('json-2-csv');
               converter.json2csv(json_object, (err, csv) => {
+                //blob de type csv
                 const parts = [
                   new Blob(["\ufeff", csv])
                 ];
+                //création du fichier avec son contenu
                 const csvFile = new File(parts, 'result.csv', {
                   lastModified: Date.now(),
                   type: "text/csv"
                 });
+                //reset le fichier selectionné par l'utilisateur par celui nouvellement crée
+                //au moment du submit, on enverra le fichier actuellement sélectionné
                 setSelectedFile(csvFile);
               })
             });
@@ -192,6 +246,7 @@ function App() {
           reader.readAsText(event.target.files[0]);
           reader.onload = function () {
             clear(p)
+            //on convertit le csv en json, pour ensuite convertir en table html et l'ajouter à la page
             document.getElementById("chartDiv").appendChild(jsonToHTMLTable(csvToJson(reader.result.split('\n').slice(0, 10).join('\n'))));
             select_column(setDisable)
           }
@@ -203,11 +258,12 @@ function App() {
   //  The user sends the request by clicking on the submit button //
 
   const handleSubmission = () => {
+    //vérification de la validité du fichier
     if (!selectedFile || !ALLOWED_FILES.includes(selectedFile.name.split('.')[1])) return
     const formData = new FormData();
 
     formData.append('File', selectedFile);
-
+    //la sélection des colonnes ainsi que le choix des algos/distances sont paramètrisés dans l'url
     var url = updateQueryStringParameter("/file", "index", selected_column)
     url = updateQueryStringParameter(url, "nameIndex", selected_columnName)
     var algo1 = + document.getElementById("algo1").checked
@@ -217,6 +273,8 @@ function App() {
     var d1 = + document.getElementById("d1").checked
     var d2 = + document.getElementById("d2").checked
     var d3 = + document.getElementById("d3").checked
+
+    //si l'utilisateur n'a coché aucune algo/distance, on affiche un message d'avertissement
     if (!(algo1 | algo2)) {
       document.getElementById("chartDiv").innerHTML = "Please choose an algorithm.";
       return;
@@ -228,7 +286,11 @@ function App() {
     url = updateQueryStringParameter(url, "d1", d1)
     url = updateQueryStringParameter(url, "d2", d2)
     url = updateQueryStringParameter(url, "d3", d3)
+
+    //création du menu déroulant : il pourra ainsi afficher le graphe en fonction des différentes distances/algos qui a sélectionné
     createMenu([algo1, algo2, d1, d2, d3])
+
+    //requête post pour envoyer le fichier au back-end avec l'url paramétrisé
     fetch(
       url,
       {
@@ -236,8 +298,11 @@ function App() {
         body: formData,
       }
     ).then((response) => response.json()).then((result) => {
+      //l'api traite le fichier, il a immédiatement renvoyé une réponse contenant la clé unique correspondant à son travail
       console.log("response: ", result);
       console.log("response.key: ", result.key);
+      //le front-end appelle cette méthode pour demander au back-end si le résultat est prêt
+      //c'est une fonction qui se rappelle elle même toutes les 5 secs pour interroger le serveur continuellement (short-polling)
       fetchForResult(result.key)
     })
 
@@ -265,20 +330,33 @@ function App() {
     //   .catch((error) => {
     //     document.getElementById('chartDiv').innerHTML = "Erreur";
     //   });
+
+    //affiche l'écran de chargement
     let loader = document.createElement("div")
     loader.setAttribute('class', 'loader')
     document.getElementById("chartDiv").innerHTML = "";
     document.getElementById("chartDiv").appendChild(loader)
   };
 
+  /*
+  Fonction pour obtenir le résultat du back-end à partir d'une clé unique
+  Cette méthode est appelé soit lorsque l'on clique sur un travail déjà existant, soit directement après un submit
+  */
   const fetchForResult = (key) => {
+    //La clé est passée en paramètre de l'url
     var url = updateQueryStringParameter('/fetchForResult', "key", key)
     fetch(
       url,
       { method: 'GET' }
     ).then((response) => {
+      /*
+      On recoit la réponse de l'api, si le code status est 201, on sait que l'api n'a pas finit de traiter le fichier
+      l'api patiente 5 secondes avant d'envoyer sa réponse pour éviter un superflux de requête
+      Dès qu'on recoit cette réponse, on rappelle la foncton tant qu'on a ce code status
+      */
       if (response.status == 201) fetchForResult(key)
       else if (response.status == 200) {
+        //Le code status est 200, le serveur à fini de calculer, on va pouvoir afficher le graphique
         response.blob()
           .then(res => {
             res.text().then(res => {
@@ -294,9 +372,24 @@ function App() {
               // option4 = 'CosDist'
               // option5 = 'TanimotoDist'
 
+              /*
+              Parsing du fichier résultat pour avoir connaissance des algos et distances qui ont été choisis
+              (un utilisateur peut cliquer sur un travail préexistant, le front-end doit connaître les algos et distances choisis
+              pour le graphe et menu déroulant)
+              */
+
+              /*
+              Première ligne du fichier (header)
+              Le titre de chaque colonne contient entre autres l'algo et la distance choisis
+              On récupère donc l'info des choix grace à ce dernier
+              */
               const lines = res.split(/\r\n|\r|\n/)
               const headers = lines[0].split(/,|;/)
+
+              //liste de booleéen à 5 éléments indiquant si l'utilisateur à coché ou non
               let checkList = [false, false, false, false, false]
+
+              //pour chaque élément du header, on set à true si algo ou distance reconnu
               headers.forEach(t => {
                 let pieces = t.split("_")
                 console.log("pieces: " + pieces);
@@ -308,13 +401,18 @@ function App() {
                   if (pieces[2] == "TanimotoDist") checkList[4] = true
                 }
               })
+
+              //création du menu déroulant
               createMenu(checkList)
 
+              //création du graphique
               jsonToGraph(csvToJson(res));
 
             });
+            //création du boutton pour download le fichier résultat
             let href = window.URL.createObjectURL(res)
             document.getElementById('dlButton').style.display = "block"
+            //au click, on download le fichier, l'url est la référence qui pointe vers le fichier
             document.getElementById('dlButton').addEventListener('click', () => {
               window.location.assign(href)
             })
@@ -331,6 +429,7 @@ function App() {
 
   document.getElementById('chooseFile').addEventListener('change', (e) => changeHandler(e))
 
+  //construction du boutton submit en React
   return (
     <div style={{ textAlign: "center" }}>
       <button id="submitButton" className="btn btn-primary" disabled={disable} onClick={handleSubmission}>Submit</button>
@@ -338,11 +437,12 @@ function App() {
   )
 };
 
-
+//construit le menu déroulant à partir du tableau de boolean
 function createMenu(checkList) {
   let selectAlgo = document.createElement('select')
   selectAlgo.setAttribute('name', 'algoGr')
   selectAlgo.setAttribute('id', 'algoGr')
+  //au changement, on retire le graphique actuellement et on le remplace par celui qui correspond aux options choisis
   selectAlgo.addEventListener('change', () => {
     myChart.destroy();
     jsonToGraph(jsonResult);
@@ -356,6 +456,8 @@ function createMenu(checkList) {
     jsonToGraph(jsonResult);
   })
 
+  //création de toute les options
+  //--- algorithmes
   let option1 = document.createElement('option')
   option1.setAttribute('value', 'tsne')
   option1.innerHTML = "tSNE"
@@ -363,7 +465,7 @@ function createMenu(checkList) {
   option2.setAttribute('value', 'umap')
   option2.innerHTML = "UMAP"
 
-
+  //--- distances
   let option3 = document.createElement('option')
   option3.setAttribute('value', 'DiceDist')
   option3.innerHTML = "Dice"
@@ -374,12 +476,14 @@ function createMenu(checkList) {
   option5.setAttribute('value', 'TanimotoDist')
   option5.innerHTML = "Tanimoto"
 
+  //on l'ajoute au menu déroulant que s'il le faut, en fonction de la liste des booléens
   if (checkList[0]) selectAlgo.appendChild(option1)
   if (checkList[1]) selectAlgo.appendChild(option2)
   if (checkList[2]) selectDistance.appendChild(option3)
   if (checkList[3]) selectDistance.appendChild(option4)
   if (checkList[4]) selectDistance.appendChild(option5)
 
+  //ajout des labels + du padding
   let algoLabel = document.createElement('label')
   algoLabel.setAttribute('style', 'padding-right: 5px')
   algoLabel.innerHTML = "Algorithm"
@@ -390,6 +494,7 @@ function createMenu(checkList) {
   distanceLabel.setAttribute('style', 'padding-right: 5px')
   distanceLabel.innerHTML = "Distance"
 
+  //ajout du menu crée à la page
   let graphMenu = document.getElementById('graphMenu')
   graphMenu.innerHTML = ""
   graphMenu.appendChild(algoLabel)
@@ -530,11 +635,14 @@ function jsonToGraph(jsonFile) {
 //  Transforms a csv file to Json //
 
 function csvToJson(csv) {
+  //split sur les lignes
   const lines = csv.split(/\r\n|\r|\n/)
+
+  //json
   const result = []
 
   const headers = lines[0].split(/,|;/)
-
+  //boucle sur les lignes
   for (let i = 1; i < lines.length; i++) {
     if (!lines[i])
       continue
@@ -552,6 +660,7 @@ function csvToJson(csv) {
 //  Transforms a JSON file to an HTML table //
 
 function jsonToHTMLTable(json) {
+  //itération sur le attributs pour avoir les colonnes
   var col = [];
   for (var i = 0; i < json.length; i++) {
     for (var key in json[i]) {
@@ -560,7 +669,7 @@ function jsonToHTMLTable(json) {
       }
     }
   }
-
+  //initialise la table html
   var table = document.createElement("table");
 
 
