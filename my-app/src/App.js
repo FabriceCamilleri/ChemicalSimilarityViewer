@@ -13,6 +13,8 @@ var selected_column;
 var selected_columnName;
 var jsonResult;
 var myChart;
+var pointIsSelected;
+var colorsOg;
 const languageEncoding = require("detect-file-encoding-and-language");
 
 
@@ -275,19 +277,32 @@ function jsonToGraph(jsonFile) {
   var labelIncorrectSmileList = []
   let algo = document.getElementById("algoGr").value
   let distance = document.getElementById("distGr").value
+  let pointRadiusList = []
+  pointIsSelected = []
+  let pointSize = jsonFile.length <= 100 ? 5 : (jsonFile.length <= 1000 ? 2 : 1)
 
   for (var i = 0; i < jsonFile.length; i++) {
     if (jsonFile[i][`X_${algo}_${distance}`] != "") {
       dataDict.push({ x: parseFloat(jsonFile[i][`X_${algo}_${distance}`]), y: parseFloat(jsonFile[i][`Y_${algo}_${distance}`]) });
       labelsList.push(jsonFile[i]["names"])
+      pointRadiusList.push(pointSize)
+      pointIsSelected.push(false)
     }
     else labelIncorrectSmileList.push(jsonFile[i]["names"])
   }
 
-  const colors = [
+  var colors = [
     "rgb(176,224,230)", "rgb(135,206,250)", "rgb(0,191,255)", "rgb(30,144,255)", "rgb(95,158,160)", "rgb(106,90,205)", "rgb(0,0,255)",
-    "rgb(0,0,139)", "rgb(100,149,237)", "rgb(240,248,255)", "rgb(0, 0, 34)"
+    "rgb(0,0,139)", "rgb(100,149,237)", "rgb(0, 0, 34)"
   ]
+
+  while (colors.length < labelsList.length) {
+    colors = colors.concat(colors)
+    console.log(colors);
+  }
+
+  colorsOg = colors.slice()
+
   const data = {
     datasets: [{
       // label: 'tSNE - Dice distance',
@@ -295,7 +310,8 @@ function jsonToGraph(jsonFile) {
       backgroundColor: colors,
       borderColor: colors,
       data: dataDict,
-      pointRadius: jsonFile.length <= 100 ? 5 : (jsonFile.length <= 1000 ? 2 : 1),
+      // pointRadius: jsonFile.length <= 100 ? 5 : (jsonFile.length <= 1000 ? 2 : 1),
+      pointRadius: pointRadiusList,
       pointHoverRadius: jsonFile.length <= 100 ? 7 : (jsonFile.length <= 1000 ? 3 : 2)
     }]
   };
@@ -363,7 +379,12 @@ function jsonToGraph(jsonFile) {
   labelsList.forEach((item) => {
     let li = document.createElement("li");
     ind++;
-    li.setAttribute('onclick', `console.log("${ind}", "${item}")`)
+    // li.setAttribute('onclick', `highLightGraph("${item}")`)
+    li.onclick = () => {
+      highLightGraph(item);
+      li.style.color == "blue" ? li.style.color = "black" : li.style.color = "blue"
+      li.style.fontWeight == "bold" ? li.style.fontWeight = "normal" : li.style.fontWeight = "bold"
+    }
     li.innerText = item;
     list.appendChild(li);
   })
@@ -389,6 +410,17 @@ function jsonToGraph(jsonFile) {
     document.getElementById('myChart'),
     config
   );
+}
+
+function highLightGraph(pointToChange) {
+  var chartIndexArray = myChart.data
+  console.log(chartIndexArray)
+  var chartIndex = chartIndexArray.datasets[0].labels.indexOf(pointToChange)
+  myChart.data.datasets[0].backgroundColor[chartIndex] = pointIsSelected[chartIndex] ? colorsOg[chartIndex] : 'lime';
+  myChart.data.datasets[0].pointRadius[chartIndex] += pointIsSelected[chartIndex] ? -3 : 3;
+  pointIsSelected[chartIndex] = !pointIsSelected[chartIndex]
+  console.log(colorsOg);
+  myChart.update();
 }
 
 //  Transforms a csv file to Json //
