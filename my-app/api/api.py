@@ -1,5 +1,6 @@
 import time
 from flask import Flask, request, send_file
+from flask_cors import CORS
 from flask.helpers import send_from_directory
 import os
 from flask import Flask, flash, request, redirect, url_for
@@ -13,8 +14,16 @@ UPLOAD_FOLDER = '/path/to/the/uploads'
 ALLOWED_EXTENSIONS = {'csv'}
 
 app = Flask(__name__)
+CORS(app)
 #app = Flask(__name__, static_folder="../build", static_url_path="")
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# NOTE: This route is needed for the default EB health check route
+
+
+@app.route('/')
+def home():
+    return "ok"
 
 
 @app.route('/post', methods=['POST'])
@@ -64,5 +73,5 @@ def upload_file():
 #     return send_from_directory(app.static_folder, 'index.html')
 
 
-# if __name__ == "__main__":
-#     app.run()
+if __name__ == '__main__':
+    app.run(port=8080)

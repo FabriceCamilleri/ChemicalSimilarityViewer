@@ -1,0 +1,13 @@
+{
+    "AWSEBDockerrunVersion": "1",
+    "Image": {
+        "Name": "328254667328.dkr.ecr.eu-west-3.amazonaws.com/chemical-backend",
+        "Update": "true"
+    },
+    "Ports": [
+        {
+            "ContainerPort": 8080,
+            "HostPort": 8080
+        }
+    ]
+}
