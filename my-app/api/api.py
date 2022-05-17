@@ -26,7 +26,7 @@ def home():
     return "ok"
 
 
-@app.route('/post', methods=['POST'])
+@app.route('/api/post', methods=['POST'])
 def updateCurrentName():
     return request.json
 
@@ -36,7 +36,7 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
-@app.route('/file', methods=['POST'])
+@app.route('/api/file', methods=['POST'])
 def upload_file():
     if 'File' not in request.files:
         print("if1")
