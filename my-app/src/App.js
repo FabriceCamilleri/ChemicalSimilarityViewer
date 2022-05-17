@@ -443,6 +443,12 @@ function jsonToGraph(jsonFile) {
       li.style.color == "blue" ? li.style.color = "black" : li.style.color = "blue"
       li.style.fontWeight == "bold" ? li.style.fontWeight = "normal" : li.style.fontWeight = "bold"
     }
+    li.onmouseover = () => {
+      if (li.style.color == "black") li.style.color = "#0d6efd"
+    }
+    li.onmouseout = () => {
+      if (li.style.color != "blue") li.style.color = "black"
+    }
     li.innerText = item;
     list.appendChild(li);
   })
