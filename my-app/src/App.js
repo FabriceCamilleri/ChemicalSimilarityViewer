@@ -47,10 +47,11 @@ function App() {
       fileUp.classList.remove('wrong');
       fileUp.classList.add('active');
       let filena = filename.replace("C:\\fakepath\\", "")
-      //à l'affichage, on troncatène le nom du fichier si trop long
+      //à l'affichage, on troncatène le nom du fichier s'il est trop long
       noFile.innerHTML = filena.length > 28 ? filena.substring(0, 25) + '...' : filena;
     }
 
+    //si pas de fichier rentré
     if (!fileSub) {
       return
     }
@@ -80,7 +81,7 @@ function App() {
         setDisable(true)
         //on affiche le fichier dans une table
 
-        //affichage les instructions
+        //affichage des instructions de choix de colonne
         let text = document.createElement("p")
         text.innerHTML = "Select the column containing SMILES code"
         text.setAttribute("id", "selectionText");
@@ -132,7 +133,7 @@ function App() {
             });
 
           };
-
+          //si erreur lors du chargement du fichier
           reader.onerror = function (ex) {
             console.log("erreur = ", ex);
           };
@@ -160,6 +161,8 @@ function App() {
   const handleSubmission = () => {
     //vérification de la validité du fichier
     if (!selectedFile || !ALLOWED_FILES.includes(selectedFile.name.split('.')[1])) return
+
+    //création du body de la requête post
     const formData = new FormData();
 
     formData.append('File', selectedFile);
@@ -187,7 +190,8 @@ function App() {
     url = updateQueryStringParameter(url, "d2", d2)
     url = updateQueryStringParameter(url, "d3", d3)
 
-    //création du menu déroulant : il pourra ainsi afficher le graphe en fonction des différentes distances/algos qui a sélectionné
+    //Création du menu déroulant : il pourra ainsi afficher le graphe en fonction des différentes distances/algos qui a sélectionné
+    //En paramètre le tableau de boolean correspondant au choix fait
     createMenu([algo1, algo2, d1, d2, d3])
 
     //requête post pour envoyer le fichier au back-end avec l'url paramétrisé
@@ -309,39 +313,52 @@ function createMenu(checkList) {
 //  Takes a JSON and build a Chartjs graph  //
 
 function jsonToGraph(jsonFile) {
+  //jsonResult est global
   jsonResult = jsonFile;
 
+  //dictionnaire des points
   var dataDict = []
+
+  //liste des nom de molécules
   var labelsList = []
+
+  //liste des molécules incorrectes
   var labelIncorrectSmileList = []
+
   let algo = document.getElementById("algoGr").value
   let distance = document.getElementById("distGr").value
   let pointRadiusList = []
   pointIsSelected = []
   let pointSize = jsonFile.length <= 100 ? 5 : (jsonFile.length <= 1000 ? 2 : 1)
 
+  //on itère sur toutes les lignes
   for (var i = 0; i < jsonFile.length; i++) {
+    //si on a un résultat pour un algo et une distance choisi
     if (jsonFile[i][`X_${algo}_${distance}`] != "") {
+      //ajout du point, formé avec les résultat de la colonne X et Y, dans le dictionnaire
       dataDict.push({ x: parseFloat(jsonFile[i][`X_${algo}_${distance}`]), y: parseFloat(jsonFile[i][`Y_${algo}_${distance}`]) });
+      //ajout du nom du point
       labelsList.push(jsonFile[i]["names"])
       pointRadiusList.push(pointSize)
       pointIsSelected.push(false)
     }
+    //sinon, c'est que le back-end l'a traité comme incorrecte
     else labelIncorrectSmileList.push(jsonFile[i]["names"])
   }
-
+  //intervalle de couleurs des points
   var colors = [
     "rgb(176,224,230)", "rgb(135,206,250)", "rgb(0,191,255)", "rgb(30,144,255)", "rgb(95,158,160)", "rgb(106,90,205)", "rgb(0,0,255)",
     "rgb(0,0,139)", "rgb(100,149,237)", "rgb(0, 0, 34)"
   ]
-
+  //longueur list colors fit avec nombre molécules
   while (colors.length < labelsList.length) {
     colors = colors.concat(colors)
     console.log(colors);
   }
 
   colorsOg = colors.slice()
-
+  //construction des données pour le graphique
+  //la taille des points varies en fonction de leur nombre (lisibilité)
   const data = {
     datasets: [{
       // label: 'tSNE - Dice distance',
@@ -355,6 +372,7 @@ function jsonToGraph(jsonFile) {
     }]
   };
 
+  //ajout d'effet, comme la toolbox au survol d'un point
   const config = {
     type: 'scatter',
     data: data,
@@ -409,12 +427,13 @@ function jsonToGraph(jsonFile) {
     }
   };
 
-  //display the list of molecules
+  //display the list of valid molecules
   let ind = 0;
   let list = document.getElementById("moleculesList");
   let listTitle = document.getElementById("validSmilesTitle");
   listTitle.style.display = "block";
   list.innerHTML = ""
+  //pour chaque molécule
   labelsList.forEach((item) => {
     let li = document.createElement("li");
     ind++;
@@ -434,23 +453,26 @@ function jsonToGraph(jsonFile) {
     list.appendChild(li);
   })
 
+  //molécule invalide
   ind = 0;
   let divNoSmile = document.getElementById("noSmileDiv");
   list = document.getElementById("noSmileList");
   list.innerHTML = ""
+  //affichage de la div uniquement si liste non vide
   if (labelIncorrectSmileList.length == 0) { divNoSmile.style.display = "none" }
   else { divNoSmile.style.display = "block" }
-
+  //pour chaque molécule invalide
   labelIncorrectSmileList.forEach((item) => {
     let li = document.createElement("li");
     ind++;
     li.setAttribute('onclick', `console.log("${ind}", "${item}")`)
     li.innerText = item;
+    //affichage rouge
     li.style.color = "red"
     list.appendChild(li);
   })
 
-
+  //création du graphique
   myChart = new Chart(
     document.getElementById('myChart'),
     config
@@ -477,7 +499,9 @@ function csvToJson(csv) {
   //json
   const result = []
 
+  //noms colonne
   const headers = lines[0].split(/,|;/)
+
   //boucle sur les lignes
   for (let i = 1; i < lines.length; i++) {
     if (!lines[i])
@@ -485,9 +509,11 @@ function csvToJson(csv) {
     const obj = {}
     const currentline = lines[i].split(/,|;/)
 
+    //boucle sur éléments de la ligne
     for (let j = 0; j < headers.length; j++) {
       obj[headers[j]] = currentline[j]
     }
+    //ajout dans le json
     result.push(obj)
   }
   return result
@@ -496,7 +522,7 @@ function csvToJson(csv) {
 //  Transforms a JSON file to an HTML table //
 
 function jsonToHTMLTable(json) {
-  //itération sur le attributs pour avoir les colonnes
+  //itération sur les attributs pour avoir les colonnes
   var col = [];
   for (var i = 0; i < json.length; i++) {
     for (var key in json[i]) {
@@ -511,16 +537,19 @@ function jsonToHTMLTable(json) {
 
   var tr = table.insertRow(-1);
 
+  //boucle sur les colonnes
   for (var i = 0; i < col.length; i++) {
     var th = document.createElement("th");
     th.innerHTML = col[i];
     tr.appendChild(th);
   }
 
+  //boucle sur les élément du json
   for (var i = 0; i < json.length; i++) {
 
     tr = table.insertRow(-1);
 
+    //boucle sur les attributs de l'élément
     for (var j = 0; j < col.length; j++) {
       var tabCell = tr.insertCell(-1);
       tabCell.innerHTML = json[i][col[j]];
@@ -547,15 +576,18 @@ export default App;
 function select_column(setDisable) {
   var table = document.getElementById("sentCSV");
   var cells = table.getElementsByTagName("td");
+  //boucle sur les cellules de la table
   for (var i = 0; i < cells.length; i++) {
     var cell = cells[i];
 
+    //au clique de la cellule, on affiche la colonne, à laquelle appartient la cellule, sélectionné et
+    //affichage de la deuxième instruction de choix de colonne
     cell.onclick = function () {
       clickEvent(this)
       document.getElementById("selectionText").innerHTML = "Select the column containing molecule names"
       select_columnName(setDisable)
     }
-
+    //affichage css
     cell.onmouseover = function () {
       mouseEvent(this, true)
     }
@@ -585,7 +617,7 @@ function select_columnName(setDisable) {
 }
 
 //  HTML table for column selections interacts with user's input  //
-
+// surbrillance de la colonne survolée
 function mouseEvent(cell, isEntering) {
   const parentTds = cell.parentElement.children;
   const clickedTdIndex = [...parentTds].findIndex(td => td == cell);
@@ -594,6 +626,7 @@ function mouseEvent(cell, isEntering) {
   if (isEntering) columns.forEach(col => { col.classList.add('highlighted'); });
 }
 
+// Met en évidence de la colonne des SMILES sélectionnée
 function clickEvent(cell) {
   const parentTds = cell.parentElement.children;
   const clickedTdIndex = [...parentTds].findIndex(td => td == cell);
@@ -603,6 +636,7 @@ function clickEvent(cell) {
   columns.forEach(col => { col.classList.add('selected'); });
 }
 
+// Met en évidence de la colonne des noms de molécule sélectionnée
 function clickEventName(cell) {
   const parentTds = cell.parentElement.children;
   const clickedTdIndex = [...parentTds].findIndex(td => td == cell);
@@ -625,6 +659,7 @@ function updateQueryStringParameter(uri, key, value) {
   }
 }
 
+// Remplace le contenu de la div principale par p
 function clear(p) {
   document.getElementById("graphMenu").innerHTML = "";
   document.getElementById("chartDiv").innerHTML = "";
