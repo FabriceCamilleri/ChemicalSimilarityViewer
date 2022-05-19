@@ -78,6 +78,7 @@ def createChemicalSpace(smiles_df, smilesColumn, nameColumn, listAlgo, listDist)
         tsne = manifold.TSNE(n_components=2, init='random',
                              random_state=42, metric='precomputed')
 
+        # Dice distance
         if(listDist[0]):
             coorDice = tsne.fit_transform(np.asarray(distDice))
             coorDice = pd.DataFrame(coorDice)
@@ -89,6 +90,7 @@ def createChemicalSpace(smiles_df, smilesColumn, nameColumn, listAlgo, listDist)
                 coords = pd.concat([coords.reset_index(
                     drop=True), coorDice.reset_index(drop=True)], axis=1, sort=False)
 
+        # Cosine distance
         if(listDist[1]):
             coorCos = tsne.fit_transform(np.asarray(distCos))
             coorCos = pd.DataFrame(coorCos)
@@ -100,6 +102,7 @@ def createChemicalSpace(smiles_df, smilesColumn, nameColumn, listAlgo, listDist)
                 coords = pd.concat([coords.reset_index(
                     drop=True), coorCos.reset_index(drop=True)], axis=1, sort=False)
 
+        # Tanimoto distance
         if(listDist[2]):
             coorTanimoto = tsne.fit_transform(np.asarray(distTanimoto))
             coorTanimoto = pd.DataFrame(coorTanimoto)
@@ -117,6 +120,7 @@ def createChemicalSpace(smiles_df, smilesColumn, nameColumn, listAlgo, listDist)
         print('Umap of chemical space ...', end=' ')
         U = umap.UMAP(metric='precomputed', random_state=42)
 
+        # Dice distance
         if(listDist[0]):
             coorDiceUmap = U.fit_transform(np.asarray(distDice))
             coorDiceUmap = pd.DataFrame(coorDiceUmap)
@@ -128,6 +132,7 @@ def createChemicalSpace(smiles_df, smilesColumn, nameColumn, listAlgo, listDist)
                 coords = pd.concat([coords.reset_index(
                     drop=True), coorDiceUmap.reset_index(drop=True)], axis=1, sort=False)
 
+        # Cosine distance
         if(listDist[1]):
             coorCosUmap = U.fit_transform(np.asarray(distCos))
             coorCosUmap = pd.DataFrame(coorCosUmap)
@@ -139,6 +144,7 @@ def createChemicalSpace(smiles_df, smilesColumn, nameColumn, listAlgo, listDist)
                 coords = pd.concat([coords.reset_index(
                     drop=True), coorCosUmap.reset_index(drop=True)], axis=1, sort=False)
 
+        # Tanimoto distance
         if(listDist[2]):
             coorTanimotoUmap = U.fit_transform(np.asarray(distTanimoto))
             coorTanimotoUmap = pd.DataFrame(coorTanimotoUmap)
