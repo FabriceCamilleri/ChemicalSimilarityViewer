@@ -1,5 +1,6 @@
 {
   "name": "mon-app",
+  "homepage": "https://d2c4nml9tkzurs.cloudfront.net/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
